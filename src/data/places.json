@@ -1,0 +1,118 @@
+{
+  "site": {
+    "whatsapp": "201515215977"
+  },
+  "places": [
+    {
+      "id": "demo-restaurant",
+      "type": "Restaurant",
+      "typeAr": "مطعم",
+      "name": "Demo Restaurant",
+      "nameAr": "مطعم تجريبي",
+      "tagline": "Fresh food, made to share.",
+      "taglineAr": "أكل طازج للمشاركة.",
+      "phone": "+201515215977",
+      "whatsapp": "201515215977",
+      "address": "Alexandria, Egypt",
+      "hours": "Daily 12:00 – 00:00",
+      "instagram": "https://instagram.com/",
+      "facebook": "",
+      "tiktok": "",
+      "reviews": "https://www.google.com/maps",
+      "offers": [
+        {
+          "t": "Lunch deal",
+          "d": "Main dish and drink for one price, 12–4 pm."
+        },
+        {
+          "t": "Share platter",
+          "d": "Order two platters and get a dessert free."
+        }
+      ],
+      "menu": [
+        {
+          "n": "Grilled chicken",
+          "p": "180 EGP"
+        },
+        {
+          "n": "Fresh salad bowl",
+          "p": "95 EGP"
+        },
+        {
+          "n": "Family platter",
+          "p": "420 EGP"
+        }
+      ]
+    },
+    {
+      "id": "demo-cafe",
+      "type": "Café",
+      "typeAr": "كافيه",
+      "name": "Demo Café",
+      "nameAr": "كافيه تجريبي",
+      "tagline": "Coffee, slow mornings.",
+      "taglineAr": "قهوة وصباحات هادئة.",
+      "phone": "",
+      "whatsapp": "201515215977",
+      "address": "Alexandria, Egypt",
+      "hours": "Daily 8:00 – 23:00",
+      "instagram": "https://instagram.com/",
+      "facebook": "",
+      "tiktok": "",
+      "reviews": "",
+      "offers": [
+        {
+          "t": "Morning coffee",
+          "d": "Second cup half price before 10 am."
+        }
+      ],
+      "menu": [
+        {
+          "n": "Flat white",
+          "p": "70 EGP"
+        },
+        {
+          "n": "Iced latte",
+          "p": "75 EGP"
+        },
+        {
+          "n": "Cheesecake",
+          "p": "90 EGP"
+        }
+      ]
+    },
+    {
+      "id": "demo-clinic",
+      "type": "Clinic",
+      "typeAr": "عيادة",
+      "name": "Demo Clinic",
+      "nameAr": "عيادة تجريبية",
+      "tagline": "Care that starts with a tap.",
+      "taglineAr": "رعاية تبدأ بلمسة.",
+      "phone": "+201515215977",
+      "whatsapp": "201515215977",
+      "address": "Alexandria, Egypt",
+      "hours": "Sat – Thu 10:00 – 20:00",
+      "instagram": "",
+      "facebook": "https://facebook.com/",
+      "tiktok": "",
+      "reviews": "https://www.google.com/maps",
+      "offers": [
+        {
+          "t": "First visit",
+          "d": "Free consultation for new patients."
+        }
+      ],
+      "menu": [
+        {
+          "n": "Consultation",
+          "p": "300 EGP"
+        },
+        {
+          "n": "Follow-up visit",
+          "p": "150 EGP"
+        }
+      ]
+    }
+  ]
+}
