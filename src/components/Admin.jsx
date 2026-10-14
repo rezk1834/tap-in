@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { useData } from '../store.jsx'
 import { PLATFORMS } from '../platforms.jsx'
+import { SITE_SOCIALS, validateSocial } from '../schema.js'
 import { PlaceIcon } from '../icons.jsx'
 import { prepareLogo, prepareMenu, kb, isUrl, openFile } from '../files.js'
 
@@ -51,6 +52,66 @@ function Toggle({ label, hint, checked, onChange }) {
   )
 }
 
+function SocialSettings({ saved, onSave }) {
+  const [draft, setDraft] = useState(() => saved.map((s) => ({ ...s })))
+  const [errs, setErrs] = useState({})
+  const [fb, setFb] = useState(null)
+  const dirty = JSON.stringify(draft) !== JSON.stringify(saved)
+
+  const edit = (i, k, v) => {
+    setDraft((d) => d.map((s, j) => (j === i ? { ...s, [k]: v } : s)))
+    setErrs((e) => ({ ...e, [draft[i].platform]: '' }))
+    setFb(null)
+  }
+  const save = () => {
+    const e = {}
+    draft.forEach((s) => {
+      const url = s.url.trim()
+      if (!url) { if (s.enabled) e[s.platform] = 'Enter a link, or switch this platform off.' }
+      else { const m = validateSocial(s.platform, url); if (m) e[s.platform] = m }
+    })
+    setErrs(e)
+    const n = Object.keys(e).length
+    if (n) return setFb({ kind: 'err', text: `Not saved. Fix ${n} link${n > 1 ? 's' : ''} and try again.` })
+    onSave(draft.map((s) => ({ ...s, url: s.url.trim() })))
+    setFb({ kind: 'ok', text: 'Social links saved. They now show on the site wherever they are enabled.' })
+  }
+  const restore = () => {
+    setDraft(SITE_SOCIALS.map((s) => ({ ...s })))
+    setErrs({})
+    setFb({ kind: 'info', text: 'Default links restored. Press Save to apply them.' })
+  }
+
+  return (
+    <>
+      <h3>Official social media</h3>
+      <p className="hint" style={{ marginTop: 0 }}>Shown in the site footer. The Instagram link also powers the “Contact Us on Instagram” button.</p>
+      {draft.map((s, i) => {
+        const P = PLATFORMS.find((x) => x.id === s.platform)
+        const err = errs[s.platform]
+        return (
+          <div className="srow" key={s.platform}>
+            <div className="sname"><span className="sico"><P.Icon /></span><b>{P.label}</b></div>
+            <label className="tg">
+              <input type="checkbox" role="switch" aria-label={`Show ${P.label} on the public site`} checked={s.enabled} onChange={(e) => edit(i, 'enabled', e.target.checked)} />
+              <span className="sw" />
+              <span className="tgt"><b>{s.enabled ? 'On' : 'Off'}</b></span>
+            </label>
+            <input aria-label={`${P.label} link`} aria-invalid={!!err} aria-describedby={err ? 'err-' + s.platform : undefined} inputMode="url" placeholder="https://..." value={s.url} onChange={(e) => edit(i, 'url', e.target.value)} />
+            {err && <p className="note err" id={'err-' + s.platform}>{err}</p>}
+          </div>
+        )
+      })}
+      <div className="up" style={{ marginTop: 12 }}>
+        <button className="btn" type="button" onClick={save} disabled={!dirty} style={{ padding: '12px 24px' }}>Save social links</button>
+        <button className="sm" type="button" onClick={restore}>Restore defaults</button>
+        {dirty && !fb && <span className="hint" style={{ margin: 0 }}>You have unsaved changes.</span>}
+      </div>
+      <Note n={fb} />
+    </>
+  )
+}
+
 const Note = ({ n }) => (n ? <p className={'note ' + n.kind} role="status">{n.text}</p> : null)
 
 export default function Admin() {
@@ -62,6 +123,7 @@ export default function Admin() {
   const [confirm, setConfirm] = useState(false)
   const [msg, setMsg] = useState('')
   const [up, setUp] = useState({})
+  const [rev, setRev] = useState(0)
   const fileRef = useRef(null)
 
   if (!authed) {
@@ -127,7 +189,7 @@ export default function Admin() {
       try {
         const d = JSON.parse(txt)
         if (!Array.isArray(d.places) || !d.site) throw new Error()
-        replace(d); setSel(0); setMsg('Imported.')
+        replace(d); setSel(0); setRev((r) => r + 1); setMsg('Imported.')
       } catch { setMsg('That file is not a valid places.json.') }
     })
   }
@@ -159,6 +221,7 @@ export default function Admin() {
           <div className="panel">
             <h2>Site settings</h2>
             <Field label="Main WhatsApp number (digits with country code)" value={data.site.whatsapp} onChange={(v) => update((d) => { d.site.whatsapp = v })} />
+            <SocialSettings key={rev} saved={data.site.socials} onSave={(socials) => update((d) => { d.site.socials = socials })} />
           </div>
         ) : p ? (
           <div className="panel">
@@ -275,7 +338,7 @@ export default function Admin() {
         <div className="bar">
           <button className="btn" type="button" onClick={exportJson}>Export places.json</button>
           <button className="sm" type="button" onClick={() => fileRef.current.click()}>Import</button>
-          <button className="sm d" type="button" onClick={() => { reset(); choose(0); setMsg('Reset to the data in the repo.') }}>Reset</button>
+          <button className="sm d" type="button" onClick={() => { reset(); choose(0); setRev((r) => r + 1); setMsg('Reset to the data in the repo.') }}>Reset</button>
           <input ref={fileRef} type="file" accept="application/json" hidden onChange={importJson} />
           <span className={'msg' + (storageError ? ' err' : '')} role="status">
             {storageError ? 'Browser storage is full, so recent edits are not saved. Export places.json now, or use smaller uploads.' : msg || 'Edits are saved in this browser. Export and commit places.json to publish them.'}

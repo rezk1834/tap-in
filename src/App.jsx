@@ -5,6 +5,7 @@ import Header from './components/Header.jsx'
 import Home from './components/Home.jsx'
 import Place from './components/Place.jsx'
 import Admin from './components/Admin.jsx'
+import Footer from './components/Footer.jsx'
 
 export default function App() {
   const { lang } = useLang()
@@ -26,7 +27,7 @@ export default function App() {
         <Route path="/admin" element={<Admin />} />
         <Route path="*" element={<Place />} />
       </Routes>
-      <footer>© Tap In</footer>
+      <Footer />
     </>
   )
 }

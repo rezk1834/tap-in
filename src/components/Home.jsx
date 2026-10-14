@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useLang } from '../i18n.jsx'
 import { useData } from '../store.jsx'
 import { ripple } from '../ripple.js'
-import { PlaceIcon } from '../icons.jsx'
+import { PlaceIcon, Instagram } from '../icons.jsx'
+import { activeSiteLinks } from '../platforms.jsx'
 
 function TapDemo() {
   const { t } = useLang()
@@ -13,9 +14,9 @@ function TapDemo() {
       <div className="nfc"><b>Tap In</b><small>NFC</small></div>
       <div className="phone">
         <div className="screen">
-          <div className="h" />
+          <div className="sl"><img src="/logo.svg" alt="" /></div>
           <div className="r">{t('menu')}</div>
-          <div className="r">{t('rev')}</div>
+          <div className="r">{t('revT')}</div>
           <div className="r">{t('offers')}</div>
           <i style={{ width: '60%' }} />
         </div>
@@ -29,6 +30,7 @@ export default function Home() {
   const { data } = useData()
   const nav = useNavigate()
   const rail = useRef(null)
+  const ig = activeSiteLinks(data.site).find((l) => l.id === 'instagram')
   const [more, setMore] = useState(false)
 
   // Show the arrow buttons only when the row is wider than the screen
@@ -100,9 +102,16 @@ export default function Home() {
       <section className="cta">
         <div className="wrap">
           <h2>{t('ch')}</h2>
+          <div className="ctas">
           <a className="wa" href={'https://wa.me/' + String(data.site.whatsapp).replace(/\D/g, '')} target="_blank" rel="noopener noreferrer">
             {t('wa')}
           </a>
+          {ig && (
+            <a className="igb" href={ig.url} target="_blank" rel="noopener noreferrer">
+              <Instagram /> {t('igc')}
+            </a>
+          )}
+          </div>
         </div>
       </section>
     </main>

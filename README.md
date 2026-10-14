@@ -18,7 +18,24 @@ npm run build      # production build in dist/
 | `/place/<id>` | A place's page, for example `/place/demo-cafe`. This is the link to write to its NFC card |
 | `/admin` | Dashboard (password protected, not linked from the public pages) |
 
+## Fonts (Kalam)
+
+The site uses the Kalam font, loaded locally with `@font-face` in `src/styles.css`. There are no Google Fonts or other external font requests.
+
+Put the two font files here (the folder already exists):
+
+```
+public/fonts/Kalam-Regular.ttf   (weight 400, regular text)
+public/fonts/Kalam-Bold.ttf      (weight 700, headings and bold text)
+```
+
+Vite serves `public/` as-is in `npm run dev` and in the production build, and `vercel.json` caches the fonts for a year. To check they load, open DevTools, go to Network, filter by **Font**, reload, and you should see both files with status 200. If one is missing, the browser quietly uses a fallback font.
+
+Kalam has no Arabic letters, so Arabic text uses the system Arabic font (Segoe UI, Tahoma, Noto Sans Arabic) while Latin letters and numbers still use Kalam.
+
 ## Features
+
+- **Official social links:** the footer shows X, Facebook, Instagram and TikTok, and the home page has a "Contact Us on Instagram" button. Both are managed in **Dashboard → Site settings → Official social media**: edit each URL, switch each platform on or off, then press **Save social links**. URLs are validated (https, right domain, account name present). A disabled platform disappears everywhere, and the Instagram button hides when Instagram is off.
 
 - **Light and dark mode:** toggle in the header. The choice is remembered, and the first visit follows the device setting.
 - **Animated card logo:** each place page opens with the card tap animation showing the place's logo. With no logo, a default icon (restaurant, café, clinic or generic) is used. Place cards on the home page show the same logo or icon.

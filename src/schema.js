@@ -29,6 +29,37 @@ export function normalizePlace(p) {
   return q
 }
 
+// Official TapinEG accounts shown site-wide (footer and contact button)
+export const SITE_SOCIALS = [
+  { platform: 'x', url: 'https://x.com/tapineg', enabled: true },
+  { platform: 'facebook', url: 'https://www.facebook.com/tapineg', enabled: true },
+  { platform: 'instagram', url: 'https://www.instagram.com/tapin.eg', enabled: true },
+  { platform: 'tiktok', url: 'https://www.tiktok.com/@tapineg', enabled: true },
+]
+
+function normalizeSite(s = {}) {
+  const saved = Array.isArray(s.socials) ? s.socials : []
+  const socials = SITE_SOCIALS.map((d) => {
+    const f = saved.find((x) => x && x.platform === d.platform)
+    return f ? { platform: d.platform, url: typeof f.url === 'string' ? f.url : d.url, enabled: f.enabled !== false } : { ...d }
+  })
+  return { ...s, whatsapp: s.whatsapp ?? '', socials }
+}
+
+const HOSTS = { x: ['x.com', 'twitter.com'], facebook: ['facebook.com', 'fb.com'], instagram: ['instagram.com'], tiktok: ['tiktok.com'] }
+const NAMES = { x: 'X', facebook: 'Facebook', instagram: 'Instagram', tiktok: 'TikTok' }
+
+// Returns an error message, or '' when the link is valid for that platform
+export function validateSocial(platform, value) {
+  let u
+  try { u = new URL(value) } catch { return 'Enter a full link starting with https://' }
+  if (!/^https?:$/.test(u.protocol)) return 'The link must start with https://'
+  const h = u.hostname.toLowerCase()
+  if (!(HOSTS[platform] || []).some((d) => h === d || h.endsWith('.' + d))) return `This is not a valid ${NAMES[platform]} link (expected ${HOSTS[platform][0]}).`
+  if (u.pathname.replace(/\//g, '') === '') return `Add the account name, e.g. https://${HOSTS[platform][0]}/yourname`
+  return ''
+}
+
 export function normalize(d) {
-  return { ...d, site: d.site || { whatsapp: '' }, places: (d.places || []).map(normalizePlace) }
+  return { ...d, site: normalizeSite(d.site), places: (d.places || []).map(normalizePlace) }
 }

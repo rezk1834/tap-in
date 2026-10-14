@@ -1,6 +1,28 @@
 {
   "site": {
-    "whatsapp": "201515215977"
+    "whatsapp": "201515215977",
+    "socials": [
+      {
+        "platform": "x",
+        "url": "https://x.com/tapineg",
+        "enabled": true
+      },
+      {
+        "platform": "facebook",
+        "url": "https://www.facebook.com/tapineg",
+        "enabled": true
+      },
+      {
+        "platform": "instagram",
+        "url": "https://www.instagram.com/tapin.eg",
+        "enabled": true
+      },
+      {
+        "platform": "tiktok",
+        "url": "https://www.tiktok.com/@tapineg",
+        "enabled": true
+      }
+    ]
   },
   "places": [
     {
