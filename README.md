@@ -35,6 +35,12 @@ Kalam has no Arabic letters, so Arabic text uses the system Arabic font (Segoe U
 
 ## Features
 
+- **Editable page address:** each place's link (`/place/<address>`) can be changed in the dashboard, or set from the place name with one click. New places follow their name until first published. When you change a published address, the old link keeps redirecting to the new one (you can remove old links in the dashboard).
+- **Multiple menu photos:** upload several photos and PDFs at once, reorder them, preview and remove them. Photos show stacked on the place page; each PDF gets its own button.
+- **Automatic cleanup in Supabase Storage:** when you press Save, images that are no longer used (replaced, removed, or belonging to a deleted place) are deleted from storage. Files uploaded and then discarded or replaced before saving are removed too. This needs the storage "read uploads" policy in `supabase/schema.sql`.
+- **WhatsApp toggle per place** (dashboard → Sections on the public page), and a **WhatsApp icon in the footer** with the other social icons (switch it on or off in Site settings; it uses the main WhatsApp number).
+- **Text fields** (inputs, text areas, dropdowns) use Noto Sans, a standard Google font with Arabic support; the rest of the site uses Kalam.
+
 - **Official social links:** the footer shows X, Facebook, Instagram and TikTok, and the home page has a "Contact Us on Instagram" button. Both are managed in **Dashboard → Site settings → Official social media**: edit each URL, switch each platform on or off, then press **Save social links**. URLs are validated (https, right domain, account name present). A disabled platform disappears everywhere, and the Instagram button hides when Instagram is off.
 
 - **Light and dark mode:** toggle in the header. The choice is remembered, and the first visit follows the device setting.

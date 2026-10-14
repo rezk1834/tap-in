@@ -39,3 +39,6 @@ create policy "admin update files" on storage.objects for update to authenticate
   using (bucket_id = 'uploads' and (auth.jwt() ->> 'email') = 'admin@tapineg.com');
 create policy "admin delete files" on storage.objects for delete to authenticated
   using (bucket_id = 'uploads' and (auth.jwt() ->> 'email') = 'admin@tapineg.com');
+
+-- Needed so the admin can delete files (replaced or removed images). Safe: the bucket is public anyway.
+create policy "read uploads" on storage.objects for select using (bucket_id = 'uploads');

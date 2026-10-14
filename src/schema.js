@@ -13,8 +13,11 @@ export function normalizePlace(p) {
   const q = { ...p }
   q.category = CATS.includes(p.category) ? p.category : guessCategory(p)
   q.logo = typeof p.logo === 'string' ? p.logo : ''
-  q.menuFile = p.menuFile && (p.menuFile.data || p.menuFile.url) ? p.menuFile : null
-  q.show = { menu: true, offers: true, links: true, reviews: true, ...(p.show || {}) }
+  const files = Array.isArray(p.menuFiles) ? p.menuFiles : p.menuFile ? [p.menuFile] : []
+  q.menuFiles = files.filter((f) => f && (f.data || f.url) && f.type)
+  delete q.menuFile
+  q.aliases = Array.isArray(p.aliases) ? p.aliases.filter(Boolean) : []
+  q.show = { menu: true, offers: true, links: true, reviews: true, whatsapp: true, ...(p.show || {}) }
   q.phones = Array.isArray(p.phones) ? p.phones : p.phone ? [{ label: '', number: p.phone }] : []
   if (Array.isArray(p.socials)) q.socials = p.socials
   else {
@@ -31,6 +34,7 @@ export function normalizePlace(p) {
 
 // Official TapinEG accounts shown site-wide (footer and contact button)
 export const SITE_SOCIALS = [
+  { platform: 'whatsapp', url: '', enabled: true },
   { platform: 'x', url: 'https://x.com/tapineg', enabled: true },
   { platform: 'facebook', url: 'https://www.facebook.com/tapineg', enabled: true },
   { platform: 'instagram', url: 'https://www.instagram.com/tapin.eg', enabled: true },
@@ -41,7 +45,7 @@ function normalizeSite(s = {}) {
   const saved = Array.isArray(s.socials) ? s.socials : []
   const socials = SITE_SOCIALS.map((d) => {
     const f = saved.find((x) => x && x.platform === d.platform)
-    return f ? { platform: d.platform, url: typeof f.url === 'string' ? f.url : d.url, enabled: f.enabled !== false } : { ...d }
+    return f ? { platform: d.platform, url: d.platform === 'whatsapp' ? '' : typeof f.url === 'string' ? f.url : d.url, enabled: f.enabled !== false } : { ...d }
   })
   return { ...s, whatsapp: s.whatsapp ?? '', socials }
 }
@@ -62,4 +66,18 @@ export function validateSocial(platform, value) {
 
 export function normalize(d) {
   return { ...d, site: normalizeSite(d.site), places: (d.places || []).map(normalizePlace) }
+}
+
+// ---- page address (URL slug) helpers ----
+const RESERVED = ['admin', 'place']
+export function slugify(text) {
+  return String(text || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, '')
+}
+export function validateSlug(slug, places, index) {
+  if (!slug) return 'The address cannot be empty.'
+  if (!/^[\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)*$/u.test(slug)) return 'Use letters, numbers and single hyphens only.'
+  if (RESERVED.includes(slug)) return 'This address is reserved. Choose another.'
+  if (places.some((p, i) => i !== index && (p.id === slug || (p.aliases || []).includes(slug)))) return 'Another place already uses this address.'
+  return ''
 }

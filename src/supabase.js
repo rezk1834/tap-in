@@ -84,3 +84,29 @@ export async function uploadFile(blob, folder) {
   }
   return `${URL_}/storage/v1/object/public/uploads/${path}`
 }
+
+// Path of a file inside the uploads bucket, or null if the URL is not one of ours
+export function storagePath(url) {
+  const prefix = `${URL_}/storage/v1/object/public/uploads/`
+  return typeof url === 'string' && url.startsWith(prefix) ? decodeURIComponent(url.slice(prefix.length)) : null
+}
+
+export async function deleteFiles(paths) {
+  if (!paths.length) return
+  const token = await getToken()
+  if (!token) throw new Error('Your session expired. Sign in again.')
+  const r = await fetch(`${URL_}/storage/v1/object/uploads`, {
+    method: 'DELETE',
+    headers: { apikey: KEY, Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prefixes: paths }),
+  })
+  if (!r.ok) {
+    let m = ''
+    try { m = (await r.json()).message } catch {}
+    throw new Error(m || r.statusText || 'Delete failed')
+  }
+  // Storage answers 200 with only the files it really deleted (security rules can silently skip some)
+  let done = null
+  try { done = await r.json() } catch {}
+  if (Array.isArray(done) && done.length < paths.length) throw new Error(`${paths.length - done.length} file(s) were not deleted. Check the storage policies.`)
+}

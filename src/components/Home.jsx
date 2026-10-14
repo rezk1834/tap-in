@@ -53,7 +53,7 @@ export default function Home() {
   const open = (e, id) => {
     e.preventDefault()
     ripple(e)
-    setTimeout(() => nav('/place/' + id), 260)
+    setTimeout(() => nav('/place/' + encodeURIComponent(id)), 260)
   }
 
   return (
@@ -86,7 +86,7 @@ export default function Home() {
           <div className="rail" ref={rail} tabIndex={0} role="region" aria-label={t('ph')}>
             {data.places.length === 0 && <p className="sub">{status === 'loading' ? t('loading') : ''}</p>}
             {data.places.map((p) => (
-              <a key={p.id} className="pc" href={'/place/' + p.id} onClick={(e) => open(e, p.id)}>
+              <a key={p.id} className="pc" href={'/place/' + encodeURIComponent(p.id)} onClick={(e) => open(e, p.id)}>
                 <span className="av">
                   {p.logo ? <img src={p.logo} alt="" /> : <PlaceIcon category={p.category} />}
                 </span>

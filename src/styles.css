@@ -195,3 +195,26 @@ footer p{margin:0}
 
 .banner{margin:0 0 16px;padding:12px 16px;border-radius:14px;background:color-mix(in srgb,var(--g2) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--g2) 40%,var(--line))}
 .banner.err{background:color-mix(in srgb,var(--danger) 12%,var(--surface));border-color:color-mix(in srgb,var(--danger) 40%,var(--line))}
+
+/* text fields use a standard Google font (Noto Sans, with Arabic support) */
+input,textarea,select{font-family:'Noto Sans','Noto Sans Arabic',system-ui,sans-serif;font-weight:400}
+/* multi-photo menu */
+.menugal{display:grid;gap:14px;margin-top:14px}
+.menugal .menuimg{margin-top:0}
+.sec .btn svg{width:20px;height:20px}
+/* dashboard: address, files */
+.fld2{margin-bottom:14px}.fld2 .lbl{display:block;font-size:.85rem;color:var(--muted);margin-bottom:4px}
+.slug{display:flex;align-items:center;border:1px solid var(--line);border-radius:12px;background:var(--bg);overflow:hidden}
+.slug .pre{padding:0 4px 0 12px;color:var(--muted);white-space:nowrap}
+.slug input{border:0;border-radius:0;background:transparent;padding-inline-start:0;min-width:0}
+.slug:focus-within{outline:3px solid var(--g2);outline-offset:2px}
+.slug input:focus-visible{outline:none}
+.chip{display:inline-flex;align-items:center;gap:6px;margin:4px 6px 0 0;padding:2px 4px 2px 10px;border-radius:999px;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--ink);font-size:.85rem}
+.chip button{font:inherit;line-height:1;border:0;border-radius:50%;width:22px;height:22px;cursor:pointer;color:var(--ink);background:transparent}
+.chip button:hover{background:color-mix(in srgb,var(--ink) 15%,transparent)}
+.subh{margin:18px 0 8px;font-size:.95rem}
+.flist{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:8px}
+.flist li{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px;border:1px solid var(--line);border-radius:14px}
+.pv.sm{width:44px;height:44px;border-radius:10px}.pv.sm svg{width:22px;height:22px}
+.fname{flex:1;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sm[disabled]{opacity:.4;cursor:default}

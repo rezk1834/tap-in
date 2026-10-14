@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useLang } from '../i18n.jsx'
 import { useData } from '../store.jsx'
 import { ripple } from '../ripple.js'
-import { PlaceIcon } from '../icons.jsx'
+import { PlaceIcon, FileIcon } from '../icons.jsx'
 import { platformOf } from '../platforms.jsx'
 import { isUrl, openFile } from '../files.js'
 
@@ -16,7 +16,15 @@ export default function Place() {
   const { id } = useParams()
   const { t, L } = useLang()
   const { data, status } = useData()
-  const p = data.places.find((x) => x.id === id)
+  const nav = useNavigate()
+  const byId = data.places.find((x) => x.id === id)
+  const byAlias = byId ? null : data.places.find((x) => x.aliases.includes(id))
+  const p = byId || byAlias
+
+  // an old page address (after a rename) keeps working: send the visitor to the current one
+  useEffect(() => {
+    if (byAlias) nav('/place/' + encodeURIComponent(byAlias.id), { replace: true })
+  }, [byAlias && byAlias.id])
 
   useEffect(() => {
     document.title = p ? `${L(p, 'name')} · Tap In` : 'Tap In'
@@ -30,13 +38,15 @@ export default function Place() {
   const phones = show.links ? p.phones.filter((x) => x.number && x.number.trim()) : []
   const offers = show.offers ? p.offers.filter((o) => o.t || o.d) : []
   const items = p.menu.filter((m) => m.n)
-  const hasMenu = show.menu && (items.length > 0 || p.menuFile)
+  const hasMenu = show.menu && (items.length > 0 || p.menuFiles.length > 0)
+  const images = p.menuFiles.filter((f) => f.type.startsWith('image/'))
+  const pdfs = p.menuFiles.filter((f) => f.type === 'application/pdf')
   const reviews = p.reviews.filter((r) => r.text || r.name)
   const hasReviews = show.reviews && (reviews.length > 0 || isUrl(p.reviewLink))
   const avg = reviews.length ? reviews.reduce((s, r) => s + (+r.rating || 0), 0) / reviews.length : 0
 
   const actions = []
-  if (p.whatsapp) actions.push(['p', t('whats'), 'https://wa.me/' + p.whatsapp.replace(/\D/g, '')])
+  if (p.whatsapp && show.whatsapp !== false) actions.push(['p', t('whats'), 'https://wa.me/' + p.whatsapp.replace(/\D/g, '')])
   phones.forEach((x) => actions.push(['', <>{t('call')} <bdi>{x.label || x.number}</bdi></>, 'tel:' + x.number.replace(/[^\d+]/g, '')]))
   if (p.address) actions.push(['', t('map'), 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(p.address)])
 
@@ -90,14 +100,20 @@ export default function Place() {
             {items.map((m, i) => (
               <div className="mi" key={i}><span>{m.n}</span><b>{m.p}</b></div>
             ))}
-            {p.menuFile && p.menuFile.type.startsWith('image/') && (
-              <button className="menuimg" type="button" onClick={() => openFile(p.menuFile)} aria-label={t('viewMenu')}>
-                <img src={p.menuFile.data || p.menuFile.url} alt={t('menu')} />
+            {images.length > 0 && (
+              <div className="menugal">
+                {images.map((f, i) => (
+                  <button className="menuimg" type="button" key={i} onClick={() => openFile(f)} aria-label={`${t('viewMenu')} ${i + 1}`}>
+                    <img src={f.data || f.url} alt={`${t('menu')} ${i + 1}`} loading="lazy" />
+                  </button>
+                ))}
+              </div>
+            )}
+            {pdfs.map((f, i) => (
+              <button className="btn" type="button" key={i} onClick={() => openFile(f)}>
+                <FileIcon width="20" height="20" /> {t('viewPdf')}{pdfs.length > 1 ? ' ' + (i + 1) : ''}
               </button>
-            )}
-            {p.menuFile && p.menuFile.type === 'application/pdf' && (
-              <button className="btn" type="button" onClick={() => openFile(p.menuFile)}>{t('viewPdf')}</button>
-            )}
+            ))}
           </div>
         )}
 

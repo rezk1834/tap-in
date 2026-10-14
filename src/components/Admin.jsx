@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useData } from '../store.jsx'
-import { PLATFORMS } from '../platforms.jsx'
-import { SITE_SOCIALS, validateSocial } from '../schema.js'
-import { PlaceIcon } from '../icons.jsx'
+import { PLATFORMS, SITE_PLATFORMS } from '../platforms.jsx'
+import { SITE_SOCIALS, validateSocial, slugify, validateSlug } from '../schema.js'
+import { PlaceIcon, FileIcon } from '../icons.jsx'
 import { prepareLogo, prepareMenu, kb, isUrl, openFile } from '../files.js'
 import { ADMIN_EMAIL, readSession, signIn, signOut, uploadFile } from '../supabase.js'
 
@@ -21,16 +21,24 @@ const SECTIONS = [
   ['offers', 'Offers', 'The offers list'],
   ['links', 'Links', 'Social media icons and phone numbers (WhatsApp always stays)'],
   ['reviews', 'Reviews', 'Customer reviews and the review link'],
+  ['whatsapp', 'WhatsApp', 'The WhatsApp button on this place’s page'],
 ]
 
 const CATEGORIES = [['restaurant', 'Restaurant'], ['cafe', 'Café'], ['clinic', 'Clinic'], ['other', 'Other']]
 
-const blank = () => ({
-  id: 'place-' + Math.random().toString(36).slice(2, 7),
-  category: 'other', logo: '', menuFile: null,
+const uniq = (base, places, idx = -1) => {
+  let s = base, n = 2
+  while (places.some((p, i) => i !== idx && (p.id === s || p.aliases.includes(s)))) s = base + '-' + n++
+  return s
+}
+const autoSlug = (name, places, idx) => uniq(slugify(name) || 'place', places, idx)
+
+const blank = (places) => ({
+  id: autoSlug('New place', places, -1),
+  category: 'other', logo: '', menuFiles: [], aliases: [],
   type: '', typeAr: '', name: 'New place', nameAr: '', tagline: '', taglineAr: '',
   whatsapp: '', address: '', hours: '', reviewLink: '',
-  show: { menu: true, offers: true, links: true, reviews: true },
+  show: { menu: true, offers: true, links: true, reviews: true, whatsapp: true },
   phones: [], socials: [], offers: [], menu: [], reviews: [],
 })
 
@@ -40,6 +48,39 @@ function Field({ label, value, onChange, ...rest }) {
       <span>{label}</span>
       <input value={value || ''} onChange={(e) => onChange(e.target.value)} {...rest} />
     </label>
+  )
+}
+
+function SlugEditor({ place, places, index, link, onApply, onRemoveAlias, onCopy }) {
+  const [draft, setDraft] = useState(place.id)
+  const [err, setErr] = useState('')
+  const changed = draft !== place.id
+  const apply = () => { const e = validateSlug(draft, places, index); setErr(e); if (!e) onApply(draft) }
+  return (
+    <div className="fld2">
+      <span className="lbl">Page address (the NFC card link)</span>
+      <div className="slug">
+        <span className="pre">/place/</span>
+        <input aria-label="Page address" value={draft} onChange={(e) => { setDraft(e.target.value.toLowerCase().replace(/\s+/g, '-')); setErr('') }} />
+      </div>
+      <div className="up" style={{ marginTop: 8 }}>
+        <button className="sm" type="button" onClick={() => { setDraft(slugify(place.name) || draft); setErr('') }}>Use the place name</button>
+        <button className="sm" type="button" onClick={apply} disabled={!changed}>Change address</button>
+      </div>
+      {err && <p className="note err" role="alert">{err}</p>}
+      {changed && !err && <p className="hint">Press “Change address”, then “Save changes” to publish it. Your old link will keep working.</p>}
+      <div className="lk" style={{ marginTop: 10 }}>
+        <input readOnly value={link} aria-label="Full link" />
+        <button className="sm" type="button" onClick={onCopy}>Copy</button>
+      </div>
+      {place.aliases.length > 0 && (
+        <p className="hint">Old links that still redirect here:{' '}
+          {place.aliases.map((a) => (
+            <span className="chip" key={a}>/place/{a}<button type="button" aria-label={`Stop redirecting /place/${a}`} onClick={() => onRemoveAlias(a)}>×</button></span>
+          ))}
+        </p>
+      )}
+    </div>
   )
 }
 
@@ -68,6 +109,7 @@ function SocialSettings({ saved, onSave, remote }) {
     const e = {}
     draft.forEach((s) => {
       const url = s.url.trim()
+      if (s.platform === 'whatsapp') return
       if (!url) { if (s.enabled) e[s.platform] = 'Enter a link, or switch this platform off.' }
       else { const m = validateSocial(s.platform, url); if (m) e[s.platform] = m }
     })
@@ -86,9 +128,9 @@ function SocialSettings({ saved, onSave, remote }) {
   return (
     <>
       <h3>Official social media</h3>
-      <p className="hint" style={{ marginTop: 0 }}>Shown in the site footer. The Instagram link also powers the “Contact Us on Instagram” button.</p>
+      <p className="hint" style={{ marginTop: 0 }}>Shown in the site footer, next to the WhatsApp icon. The Instagram link also powers the “Contact Us on Instagram” button.</p>
       {draft.map((s, i) => {
-        const P = PLATFORMS.find((x) => x.id === s.platform)
+        const P = SITE_PLATFORMS.find((x) => x.id === s.platform)
         const err = errs[s.platform]
         return (
           <div className="srow" key={s.platform}>
@@ -98,7 +140,9 @@ function SocialSettings({ saved, onSave, remote }) {
               <span className="sw" />
               <span className="tgt"><b>{s.enabled ? 'On' : 'Off'}</b></span>
             </label>
-            <input aria-label={`${P.label} link`} aria-invalid={!!err} aria-describedby={err ? 'err-' + s.platform : undefined} inputMode="url" placeholder="https://..." value={s.url} onChange={(e) => edit(i, 'url', e.target.value)} />
+            {s.platform === 'whatsapp' ? (
+              <p className="hint" style={{ margin: 0 }}>Uses the main WhatsApp number above.</p>
+            ) : <input aria-label={`${P.label} link`} aria-invalid={!!err} aria-describedby={err ? 'err-' + s.platform : undefined} inputMode="url" placeholder="https://..." value={s.url} onChange={(e) => edit(i, 'url', e.target.value)} />}
             {err && <p className="note err" id={'err-' + s.platform}>{err}</p>}
           </div>
         )
@@ -116,7 +160,7 @@ function SocialSettings({ saved, onSave, remote }) {
 const Note = ({ n }) => (n ? <p className={'note ' + n.kind} role="status">{n.text}</p> : null)
 
 export default function Admin() {
-  const { data, update, replace, reset, save, storageError, remote, status, dirty } = useData()
+  const { data, update, replace, reset, save, registerUpload, isSaved, storageError, remote, status, dirty } = useData()
   const [session, setSession] = useState(() => (remote ? readSession() : null))
   const [authed, setAuthed] = useState(() => !remote && sessionStorage.getItem('tapin-admin') === '1')
   const [email, setEmail] = useState(ADMIN_EMAIL)
@@ -172,10 +216,23 @@ export default function Admin() {
   }
 
   const p = sel === 'site' ? null : data.places[sel]
-  const link = `${location.origin}/place/${p?.id}`
+  const link = `${location.origin}/place/${encodeURIComponent(p?.id || '')}`
   const choose = (i) => { setSel(i); setConfirm(false); setUp({}) }
 
-  const setField = (k, v) => update((d) => { d.places[sel][k] = v })
+  // a brand-new place keeps its page address in step with its name until it is first saved
+  const setField = (k, v) => update((d) => {
+    const pl = d.places[sel]
+    if (k === 'name' && !isSaved(pl.id) && pl.id === autoSlug(pl.name, d.places, sel)) pl.id = autoSlug(v, d.places, sel)
+    pl[k] = v
+  })
+  const applySlug = (slug) => update((d) => {
+    const pl = d.places[sel], old = pl.id
+    pl.aliases = pl.aliases.filter((a) => a !== slug)
+    if (old !== slug && isSaved(old) && !pl.aliases.includes(old)) pl.aliases.push(old)
+    pl.id = slug
+  })
+  const moveFile = (j, dir) => update((d) => { const a = d.places[sel].menuFiles; [a[j], a[j + dir]] = [a[j + dir], a[j]] })
+  const removeFile = (j) => update((d) => { d.places[sel].menuFiles.splice(j, 1) })
   const setItem = (list, j, k, v) => update((d) => { d.places[sel][list][j][k] = v })
   const addItem = (list, item) => update((d) => { d.places[sel][list].push(item) })
   const rmItem = (list, j) => update((d) => { d.places[sel][list].splice(j, 1) })
@@ -191,6 +248,7 @@ export default function Admin() {
       try {
         note('logo', 'info', 'Uploading…')
         const url = await uploadFile(await (await fetch(r.data)).blob(), 'logos')
+        registerUpload(url)
         setField('logo', url)
         note('logo', 'ok', 'Logo uploaded. Press “Save changes” to publish it.')
       } catch (err) { note('logo', 'err', 'Upload failed: ' + err.message) }
@@ -200,29 +258,27 @@ export default function Admin() {
     note('logo', 'ok', `Logo uploaded (${kb(r.data.length)}). It now shows on the card and the place page.`)
   }
   const onMenu = async (e) => {
-    const f = e.target.files[0]; e.target.value = ''
-    if (!f) return
-    note('menu', 'info', 'Processing…')
-    const r = await prepareMenu(f, remote ? { max: 8 * 1024 * 1024, read: false } : {})
-    if (r.error) return note('menu', 'err', r.error)
-    if (remote) {
-      try {
-        note('menu', 'info', 'Uploading…')
-        const url = await uploadFile(f, 'menus')
-        setField('menuFile', { name: f.name, type: f.type, url })
-        note('menu', 'ok', `Menu uploaded: ${f.name} (${kb(f.size)}). Press “Save changes” to publish it.`)
-      } catch (err) { note('menu', 'err', 'Upload failed: ' + err.message) }
-      return
+    const files = [...e.target.files]; e.target.value = ''
+    if (!files.length) return
+    const idx = sel
+    note('menu', 'info', `Processing ${files.length} file${files.length > 1 ? 's' : ''}…`)
+    const added = [], errors = []
+    for (const f of files) {
+      const r = await prepareMenu(f, remote ? { max: 8 * 1024 * 1024, read: false } : {})
+      if (r.error) { errors.push(`${f.name}: ${r.error}`); continue }
+      if (!remote) { added.push(r.file); continue }
+      try { const url = await uploadFile(f, 'menus'); registerUpload(url); added.push({ name: f.name, type: f.type, url }) }
+      catch (err) { errors.push(`${f.name}: upload failed (${err.message})`) }
     }
-    setField('menuFile', r.file)
-    note('menu', 'ok', `Menu uploaded: ${r.file.name} (${kb(f.size)}).`)
+    if (added.length) update((d) => { d.places[idx].menuFiles.push(...added) })
+    note('menu', errors.length ? 'err' : 'ok', [added.length ? `Added ${added.length} file${added.length > 1 ? 's' : ''}.${remote ? ' Press “Save changes” to publish.' : ''}` : '', ...errors].filter(Boolean).join(' '))
   }
 
   const doSave = async () => {
     setSaving(true); setMsg('Saving…')
     const r = await save()
     setSaving(false)
-    if (r.ok) return setMsg('Saved. The changes are live for everyone.')
+    if (r.ok) return setMsg(r.warn || (r.deleted ? `Saved. The changes are live for everyone, and ${r.deleted} unused file${r.deleted > 1 ? 's were' : ' was'} deleted from storage.` : 'Saved. The changes are live for everyone.'))
     if (/session expired/i.test(r.error)) { signOut(); setSession(null); return }
     setMsg('Could not save: ' + r.error + (/row-level|policy|permission|jwt/i.test(r.error) ? ` Make sure you are signed in as ${ADMIN_EMAIL}.` : ''))
   }
@@ -255,7 +311,8 @@ export default function Admin() {
   }
 
   const has = p && {
-    menu: p.menu.some((m) => m.n) || !!p.menuFile,
+    menu: p.menu.some((m) => m.n) || p.menuFiles.length > 0,
+    whatsapp: !!p.whatsapp,
     offers: p.offers.some((o) => o.t || o.d),
     links: p.phones.some((x) => x.number) || p.socials.some((s) => isUrl(s.url)),
     reviews: p.reviews.length > 0 || isUrl(p.reviewLink),
@@ -270,7 +327,7 @@ export default function Admin() {
           </button>
         ))}
         <button className={'li' + (sel === 'site' ? ' on' : '')} type="button" onClick={() => choose('site')}>Site settings</button>
-        <button className="li add" type="button" onClick={() => { update((d) => { d.places.push(blank()) }); choose(data.places.length) }}>+ Add place</button>
+        <button className="li add" type="button" onClick={() => { update((d) => { d.places.push(blank(d.places)) }); choose(data.places.length) }}>+ Add place</button>
         <button className="li" type="button" onClick={logout}>Sign out</button>
       </div>
 
@@ -286,9 +343,8 @@ export default function Admin() {
         ) : p ? (
           <div className="panel">
             <h2>{p.name || 'New place'}</h2>
-            <label className="fld"><span>NFC card link (write this to the card)</span>
-              <div className="lk"><input readOnly value={link} /><button className="sm" type="button" onClick={copy}>Copy</button></div>
-            </label>
+            <SlugEditor key={p.id} place={p} places={data.places} index={sel} link={link} onApply={applySlug} onCopy={copy}
+              onRemoveAlias={(a) => update((d) => { d.places[sel].aliases = d.places[sel].aliases.filter((x) => x !== a) })} />
             {TEXT_FIELDS.map(([k, label]) => <Field key={k} label={label} value={p[k]} onChange={(v) => setField(k, v)} />)}
 
             <h3>Logo and icon</h3>
@@ -360,16 +416,27 @@ export default function Admin() {
               </div>
             ))}
             <button className="sm" type="button" onClick={() => addItem('menu', { n: '', p: '' })}>+ Add menu item</button>
-            <div className="up" style={{ marginTop: 16 }}>
-              <label className="sm filebtn">{p.menuFile ? 'Replace menu file' : 'Upload menu (PDF or image)'}
-                <input className="vh" type="file" accept="application/pdf,image/png,image/jpeg,image/webp" onChange={onMenu} />
+            <h4 className="subh">Menu photos and PDF files</h4>
+            {p.menuFiles.length > 0 && (
+              <ul className="flist">
+                {p.menuFiles.map((f, j) => (
+                  <li key={(f.url || f.name) + j}>
+                    <span className="pv sm">{f.type.startsWith('image/') ? <img src={f.data || f.url} alt="" /> : <FileIcon />}</span>
+                    <span className="fname">{f.name}</span>
+                    <button className="sm" type="button" aria-label={`Move ${f.name} up`} disabled={j === 0} onClick={() => moveFile(j, -1)}>↑</button>
+                    <button className="sm" type="button" aria-label={`Move ${f.name} down`} disabled={j === p.menuFiles.length - 1} onClick={() => moveFile(j, 1)}>↓</button>
+                    <button className="sm" type="button" onClick={() => openFile(f)}>Preview</button>
+                    <button className="sm d" type="button" onClick={() => removeFile(j)}>Remove</button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="up">
+              <label className="sm filebtn">{p.menuFiles.length ? 'Add more menu files' : 'Upload menu photos or PDF'}
+                <input className="vh" type="file" multiple accept="application/pdf,image/png,image/jpeg,image/webp" onChange={onMenu} />
               </label>
-              {p.menuFile && <>
-                <button className="sm" type="button" onClick={() => openFile(p.menuFile)}>Preview {p.menuFile.name}</button>
-                <button className="sm d" type="button" onClick={() => { setField('menuFile', null); note('menu', 'ok', 'Menu file removed.') }}>Remove file</button>
-              </>}
             </div>
-            <p className="hint">PDF, PNG, JPG or WebP up to {remote ? '8 MB' : '1.5 MB'}. Without a file, only the menu items above are shown.</p>
+            <p className="hint">You can pick several photos at once. PDF, PNG, JPG or WebP, up to {remote ? '8 MB' : '1.5 MB'} each. Photos show in the order above.</p>
             <Note n={up.menu} />
 
             <h3>Reviews</h3>
@@ -405,7 +472,7 @@ export default function Admin() {
           <button className="sm" type="button" onClick={() => fileRef.current.click()}>Import</button>
           <button className="sm d" type="button" onClick={() => { reset(); choose(0); setRev((r) => r + 1); setMsg(remote ? 'Discarded unsaved changes.' : 'Reset to the data in the repo.') }}>{remote ? 'Discard changes' : 'Reset'}</button>
           <input ref={fileRef} type="file" accept="application/json" hidden onChange={importJson} />
-          <span className={'msg' + (storageError || /^Could not|^Not saved/.test(msg) ? ' err' : '')} role="status">
+          <span className={'msg' + (storageError || /^Could not|^Not saved|could not be deleted/.test(msg) ? ' err' : '')} role="status">
             {storageError ? 'Browser storage is full, so recent edits are not saved. Export places.json now, or use smaller uploads.' : msg || (remote ? (dirty ? 'You have unsaved changes.' : 'Everything is saved.') : 'Edits are saved in this browser. Export and commit places.json to publish them.')}
           </span>
         </div>
