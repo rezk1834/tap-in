@@ -1,7 +1,9 @@
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLang } from '../i18n.jsx'
 import { useData } from '../store.jsx'
 import { ripple } from '../ripple.js'
+import { PlaceIcon } from '../icons.jsx'
 
 function TapDemo() {
   const { t } = useLang()
@@ -26,6 +28,25 @@ export default function Home() {
   const { t, L, lang } = useLang()
   const { data } = useData()
   const nav = useNavigate()
+  const rail = useRef(null)
+  const [more, setMore] = useState(false)
+
+  // Show the arrow buttons only when the row is wider than the screen
+  useEffect(() => {
+    const el = rail.current
+    if (!el) return
+    const check = () => setMore(el.scrollWidth > el.clientWidth + 4)
+    check()
+    const ro = new ResizeObserver(check)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [data.places.length])
+
+  const scroll = (dir) => {
+    const el = rail.current
+    const rtl = document.documentElement.dir === 'rtl' ? -1 : 1
+    el.scrollBy({ left: dir * rtl * el.clientWidth * 0.8, behavior: 'smooth' })
+  }
 
   const open = (e, id) => {
     e.preventDefault()
@@ -50,11 +71,22 @@ export default function Home() {
 
       <section className="places" id="places">
         <div className="wrap">
-          <h2>{t('ph')}</h2>
-          <p className="sub">{t('ps')}</p>
-          <div className="grid">
+          <div className="rhead">
+            <div>
+              <h2>{t('ph')}</h2>
+              <p className="sub">{t('ps')}</p>
+            </div>
+            <div className="rnav" hidden={!more}>
+              <button className="ib" type="button" aria-label={t('prev')} onClick={() => scroll(-1)}>‹</button>
+              <button className="ib" type="button" aria-label={t('next')} onClick={() => scroll(1)}>›</button>
+            </div>
+          </div>
+          <div className="rail" ref={rail} tabIndex={0} role="region" aria-label={t('ph')}>
             {data.places.map((p) => (
               <a key={p.id} className="pc" href={'/place/' + p.id} onClick={(e) => open(e, p.id)}>
+                <span className="av">
+                  {p.logo ? <img src={p.logo} alt="" /> : <PlaceIcon category={p.category} />}
+                </span>
                 <span className="k">{L(p, 'type')}</span>
                 <strong>{L(p, 'name')}</strong>
                 <span className="t">{L(p, 'tagline')}</span>

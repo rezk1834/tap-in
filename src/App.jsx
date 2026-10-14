@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Routes, Route, Link, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { useLang } from './i18n.jsx'
 import Header from './components/Header.jsx'
 import Home from './components/Home.jsx'
@@ -7,7 +7,7 @@ import Place from './components/Place.jsx'
 import Admin from './components/Admin.jsx'
 
 export default function App() {
-  const { lang, t } = useLang()
+  const { lang } = useLang()
   const { pathname } = useLocation()
   const isAdmin = pathname.startsWith('/admin')
 
@@ -26,9 +26,7 @@ export default function App() {
         <Route path="/admin" element={<Admin />} />
         <Route path="*" element={<Place />} />
       </Routes>
-      <footer>
-        © Tap In · <Link to="/admin">{t('dash')}</Link>
-      </footer>
+      <footer>© Tap In</footer>
     </>
   )
 }

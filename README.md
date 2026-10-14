@@ -16,7 +16,19 @@ npm run build      # production build in dist/
 | --- | --- |
 | `/` | Home with the tap animation and the list of places |
 | `/place/<id>` | A place's page, for example `/place/demo-cafe`. This is the link to write to its NFC card |
-| `/admin` | Dashboard (password protected) |
+| `/admin` | Dashboard (password protected, not linked from the public pages) |
+
+## Features
+
+- **Light and dark mode:** toggle in the header. The choice is remembered, and the first visit follows the device setting.
+- **Animated card logo:** each place page opens with the card tap animation showing the place's logo. With no logo, a default icon (restaurant, café, clinic or generic) is used. Place cards on the home page show the same logo or icon.
+- **Places row:** the supported places scroll sideways (swipe on mobile, arrow buttons on desktop when there is overflow).
+- **Contact and social links:** any number of phone numbers and social links per place (Instagram, Facebook, TikTok, X, YouTube, LinkedIn, Telegram, Website, or any other name). Only configured ones appear. WhatsApp works exactly as before.
+- **Reviews:** a reviews section with an average rating, review cards and a "Leave a review" button.
+- **Section toggles:** per place, Menu, Offers, Links and Reviews can each be shown or hidden. "Links" covers social icons and phone numbers.
+- **Uploads:** a logo (PNG, JPG, WebP, SVG; rasters are resized automatically) and a menu file (PDF or image up to 1.5 MB). Files are checked on upload and the dashboard shows a clear success or error message.
+
+To add a social platform, add one line to `src/platforms.jsx`. Old data (single phone, Instagram, Facebook, TikTok, review URL) is upgraded automatically.
 
 ## Edit the data
 
@@ -25,6 +37,8 @@ All content lives in `src/data/places.json`. You can edit that file by hand, or 
 1. Open `/admin` and sign in. The default password is `tapin-admin`; set your own with `VITE_ADMIN_PASSWORD` (copy `.env.example` to `.env`, and add the same variable in Vercel).
 2. Add or edit places, offers and menu items. Changes are saved **in your browser only**.
 3. Press **Export places.json**, replace `src/data/places.json` with the downloaded file, then commit and push. Vercel redeploys and everyone sees the update.
+
+Uploaded logos and menus are stored inside `places.json` as data, so keep them small. If browser storage fills up, the dashboard warns you; export right away. For many places or large menus, move files to storage such as Supabase Storage.
 
 The password only protects the editing screen. Visitors can never change the site, because they only read the committed `places.json`.
 

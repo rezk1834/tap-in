@@ -3,8 +3,14 @@ import { useParams } from 'react-router-dom'
 import { useLang } from '../i18n.jsx'
 import { useData } from '../store.jsx'
 import { ripple } from '../ripple.js'
+import { PlaceIcon } from '../icons.jsx'
+import { platformOf } from '../platforms.jsx'
+import { isUrl, openFile } from '../files.js'
 
-const isUrl = (u) => /^https?:\/\//i.test(u || '')
+function Stars({ n }) {
+  const r = Math.max(0, Math.min(5, Math.round(n)))
+  return <span className="stars" role="img" aria-label={`${r} / 5`}>{'★'.repeat(r)}{'☆'.repeat(5 - r)}</span>
+}
 
 export default function Place() {
   const { id } = useParams()
@@ -18,52 +24,98 @@ export default function Place() {
 
   if (!p) return <div className="pg"><p>{t('nf')}</p></div>
 
+  const show = p.show
+  // Links toggle covers social icons and phone numbers. WhatsApp is always shown.
+  const socials = show.links ? p.socials.filter((s) => isUrl(s.url)) : []
+  const phones = show.links ? p.phones.filter((x) => x.number && x.number.trim()) : []
+  const offers = show.offers ? p.offers.filter((o) => o.t || o.d) : []
+  const items = p.menu.filter((m) => m.n)
+  const hasMenu = show.menu && (items.length > 0 || p.menuFile)
+  const reviews = p.reviews.filter((r) => r.text || r.name)
+  const hasReviews = show.reviews && (reviews.length > 0 || isUrl(p.reviewLink))
+  const avg = reviews.length ? reviews.reduce((s, r) => s + (+r.rating || 0), 0) / reviews.length : 0
+
   const actions = []
   if (p.whatsapp) actions.push(['p', t('whats'), 'https://wa.me/' + p.whatsapp.replace(/\D/g, '')])
-  if (p.phone) actions.push(['', t('call'), 'tel:' + p.phone.replace(/[^\d+]/g, '')])
-  if (isUrl(p.instagram)) actions.push(['', t('ig'), p.instagram])
-  if (isUrl(p.facebook)) actions.push(['', t('fb'), p.facebook])
-  if (isUrl(p.tiktok)) actions.push(['', t('tt'), p.tiktok])
+  phones.forEach((x) => actions.push(['', <>{t('call')} <bdi>{x.label || x.number}</bdi></>, 'tel:' + x.number.replace(/[^\d+]/g, '')]))
   if (p.address) actions.push(['', t('map'), 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(p.address)])
-  if (isUrl(p.reviews)) actions.push(['', t('rev'), p.reviews])
 
   return (
     <>
       <section className="ph">
-        <div className="badge">
-          <i /><i /><i />
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-            <path d="M5 11a8 8 0 0 1 8-8M5 17a14 14 0 0 1 14-14" />
-            <circle cx="6" cy="18" r="1.6" fill="currentColor" />
-          </svg>
+        <div className="tcard" aria-hidden="true">
+          <span className="tr" /><span className="tr" /><span className="tr" />
+          <div className="face">
+            <div className="lg">{p.logo ? <img src={p.logo} alt="" /> : <PlaceIcon category={p.category} />}</div>
+          </div>
         </div>
         <p className="k">{L(p, 'type')}</p>
         <h1>{L(p, 'name')}</h1>
         <p className="tl">{L(p, 'tagline')}</p>
+        {socials.length > 0 && (
+          <div className="soc">
+            {socials.map((s, i) => {
+              const { Icon, label } = platformOf(s)
+              return (
+                <a key={i} className="sb" href={s.url.trim()} onClick={ripple} target="_blank" rel="noopener noreferrer" aria-label={label} title={label}>
+                  <Icon />
+                </a>
+              )
+            })}
+          </div>
+        )}
       </section>
 
       <div className="pg">
-        <div className="acts">
-          {actions.map(([cls, label, href]) => (
-            <a key={label} className={'act ' + cls} href={href} onClick={ripple} target="_blank" rel="noopener noreferrer">{label}</a>
-          ))}
-        </div>
+        {actions.length > 0 && (
+          <div className="acts">
+            {actions.map(([cls, label, href], i) => (
+              <a key={i} className={'act ' + cls} href={href} onClick={ripple} target="_blank" rel="noopener noreferrer">{label}</a>
+            ))}
+          </div>
+        )}
 
-        {p.offers?.length > 0 && (
+        {offers.length > 0 && (
           <div className="sec">
             <h2>{t('offers')}</h2>
-            {p.offers.map((o, i) => (
+            {offers.map((o, i) => (
               <div className="offer" key={i}><b>{o.t}</b><span>{o.d}</span></div>
             ))}
           </div>
         )}
 
-        {p.menu?.length > 0 && (
+        {hasMenu && (
           <div className="sec">
             <h2>{t('menu')}</h2>
-            {p.menu.map((m, i) => (
+            {items.map((m, i) => (
               <div className="mi" key={i}><span>{m.n}</span><b>{m.p}</b></div>
             ))}
+            {p.menuFile && p.menuFile.type.startsWith('image/') && (
+              <button className="menuimg" type="button" onClick={() => openFile(p.menuFile)} aria-label={t('viewMenu')}>
+                <img src={p.menuFile.data} alt={t('menu')} />
+              </button>
+            )}
+            {p.menuFile && p.menuFile.type === 'application/pdf' && (
+              <button className="btn" type="button" onClick={() => openFile(p.menuFile)}>{t('viewPdf')}</button>
+            )}
+          </div>
+        )}
+
+        {hasReviews && (
+          <div className="sec">
+            <h2>{t('revT')}</h2>
+            {reviews.length > 0 && (
+              <div className="rsum"><Stars n={avg} /><span>{avg.toFixed(1)} ({reviews.length})</span></div>
+            )}
+            {reviews.map((r, i) => (
+              <div className="rv" key={i}>
+                <div className="rh"><b>{r.name}</b>{+r.rating > 0 && <Stars n={r.rating} />}</div>
+                {r.text && <p>{r.text}</p>}
+              </div>
+            ))}
+            {isUrl(p.reviewLink) && (
+              <a className="btn" href={p.reviewLink.trim()} target="_blank" rel="noopener noreferrer" onClick={ripple}>{t('rev')}</a>
+            )}
           </div>
         )}
 
