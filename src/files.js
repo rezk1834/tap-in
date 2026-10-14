@@ -47,11 +47,11 @@ export async function prepareLogo(file) {
   }
 }
 
-export async function prepareMenu(file) {
+export async function prepareMenu(file, { max = MENU_MAX, read = true } = {}) {
   if (!MENU_TYPES.includes(file.type)) return { error: 'Unsupported file. Upload a PDF, PNG, JPG or WebP.' }
-  if (file.size > MENU_MAX) return { error: `That file is ${kb(file.size)}. The maximum is 1.5 MB. Compress the PDF or use a smaller image.` }
+  if (file.size > max) return { error: `That file is ${kb(file.size)}. The maximum is ${kb(max)}. Compress the PDF or use a smaller image.` }
   try {
-    return { file: { name: file.name, type: file.type, data: await readDataUrl(file) } }
+    return { file: { name: file.name, type: file.type, ...(read ? { data: await readDataUrl(file) } : {}) } }
   } catch {
     return { error: 'That file could not be read. Try again.' }
   }
@@ -59,12 +59,17 @@ export async function prepareMenu(file) {
 
 // Browsers block navigating straight to data: URLs, so open uploaded files through a blob URL.
 export function openFile(f) {
+  if (f.url) return openUrl(f.url)
   const bin = atob(f.data.split(',')[1])
   const bytes = new Uint8Array(bin.length)
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i)
   const url = URL.createObjectURL(new Blob([bytes], { type: f.type }))
+  openUrl(url)
+  setTimeout(() => URL.revokeObjectURL(url), 60000)
+}
+
+function openUrl(url) {
   const a = document.createElement('a')
   a.href = url; a.target = '_blank'; a.rel = 'noopener'
   document.body.appendChild(a); a.click(); a.remove()
-  setTimeout(() => URL.revokeObjectURL(url), 60000)
 }

@@ -47,7 +47,28 @@ Kalam has no Arabic letters, so Arabic text uses the system Arabic font (Segoe U
 
 To add a social platform, add one line to `src/platforms.jsx`. Old data (single phone, Instagram, Facebook, TikTok, review URL) is upgraded automatically.
 
-## Edit the data
+## Backend (Supabase)
+
+With Supabase configured, visitors read places and settings from the database, and the dashboard saves straight to it, so changes are live for everyone as soon as you press **Save changes**. Logos and menus are uploaded to Supabase Storage.
+
+**One-time setup**
+
+1. In Supabase, open **Authentication → Users → Add user** and create `admin@tapineg.com` with a strong password (tick **Auto Confirm User**). Turn off public sign-ups in the Authentication settings.
+2. Open **SQL Editor**, paste the contents of `supabase/schema.sql`, and run it. It creates the tables, the security rules (everyone can read, only `admin@tapineg.com` can write) and the `uploads` storage bucket.
+3. Make sure these variables exist in Vercel (the Vercel + Supabase integration adds them automatically) and in a local `.env.local`:
+   `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (or `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`). `vite.config.js` exposes only `VITE_*` and `NEXT_PUBLIC_*`, so secrets such as the service role key never reach the browser. Redeploy after changing variables.
+4. Open `/admin`, sign in, and press **Save changes** once to publish the sample data into the empty database. Then edit it.
+
+**How it behaves**
+
+- The site shows the last cached copy instantly and refreshes from the database in the background. If the database is unreachable it falls back to the cache, then to `src/data/places.json`.
+- Edits stay on your screen until you press **Save changes**; the browser warns if you leave with unsaved edits. **Backup (JSON)** downloads everything, and **Import** loads a backup (press Save to publish it).
+- Uploads are limited to 8 MB for menus. Replaced or removed files stay in Storage and can be deleted in the Supabase dashboard.
+- Never put the service role key, JWT secret or database password in this project.
+
+Without Supabase variables the site still works the old way: edits are a browser-only draft protected by `VITE_ADMIN_PASSWORD`, and you export and commit `places.json`.
+
+## Edit the data (without Supabase)
 
 All content lives in `src/data/places.json`. You can edit that file by hand, or use the dashboard:
 
@@ -67,6 +88,3 @@ Push the repo to GitHub, import it in Vercel, and keep the defaults (Framework: 
 
 Use **+ Add place** in the dashboard. Each place gets an id (for example `place-k3j9x`) that forms its link, so don't change the id after you've written it to a card. You can rename it in `places.json` before you start using the link.
 
-## Next step: edit without redeploying
-
-If you want edits to go live instantly instead of exporting and committing, move `places.json` into a database such as Supabase or Firebase and read it in `src/store.jsx`. The rest of the app doesn't need to change.

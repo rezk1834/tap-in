@@ -192,3 +192,6 @@ footer p{margin:0}
 .srow .tg{padding:0}.srow .tgt b{min-width:2.2em}
 .btn[disabled]{opacity:.5;cursor:default}
 @media (max-width:640px){.srow{grid-template-columns:1fr auto}.srow>input{grid-column:1/-1}}
+
+.banner{margin:0 0 16px;padding:12px 16px;border-radius:14px;background:color-mix(in srgb,var(--g2) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--g2) 40%,var(--line))}
+.banner.err{background:color-mix(in srgb,var(--danger) 12%,var(--surface));border-color:color-mix(in srgb,var(--danger) 40%,var(--line))}

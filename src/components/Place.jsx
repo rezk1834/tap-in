@@ -15,14 +15,14 @@ function Stars({ n }) {
 export default function Place() {
   const { id } = useParams()
   const { t, L } = useLang()
-  const { data } = useData()
+  const { data, status } = useData()
   const p = data.places.find((x) => x.id === id)
 
   useEffect(() => {
     document.title = p ? `${L(p, 'name')} · Tap In` : 'Tap In'
   })
 
-  if (!p) return <div className="pg"><p>{t('nf')}</p></div>
+  if (!p) return <div className="pg"><p>{status === 'loading' ? t('loading') : t('nf')}</p></div>
 
   const show = p.show
   // Links toggle covers social icons and phone numbers. WhatsApp is always shown.
@@ -92,7 +92,7 @@ export default function Place() {
             ))}
             {p.menuFile && p.menuFile.type.startsWith('image/') && (
               <button className="menuimg" type="button" onClick={() => openFile(p.menuFile)} aria-label={t('viewMenu')}>
-                <img src={p.menuFile.data} alt={t('menu')} />
+                <img src={p.menuFile.data || p.menuFile.url} alt={t('menu')} />
               </button>
             )}
             {p.menuFile && p.menuFile.type === 'application/pdf' && (

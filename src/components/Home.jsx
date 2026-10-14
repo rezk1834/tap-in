@@ -27,7 +27,7 @@ function TapDemo() {
 
 export default function Home() {
   const { t, L, lang } = useLang()
-  const { data } = useData()
+  const { data, status } = useData()
   const nav = useNavigate()
   const rail = useRef(null)
   const ig = activeSiteLinks(data.site).find((l) => l.id === 'instagram')
@@ -84,6 +84,7 @@ export default function Home() {
             </div>
           </div>
           <div className="rail" ref={rail} tabIndex={0} role="region" aria-label={t('ph')}>
+            {data.places.length === 0 && <p className="sub">{status === 'loading' ? t('loading') : ''}</p>}
             {data.places.map((p) => (
               <a key={p.id} className="pc" href={'/place/' + p.id} onClick={(e) => open(e, p.id)}>
                 <span className="av">

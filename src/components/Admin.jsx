@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useData } from '../store.jsx'
 import { PLATFORMS } from '../platforms.jsx'
 import { SITE_SOCIALS, validateSocial } from '../schema.js'
 import { PlaceIcon } from '../icons.jsx'
 import { prepareLogo, prepareMenu, kb, isUrl, openFile } from '../files.js'
+import { ADMIN_EMAIL, readSession, signIn, signOut, uploadFile } from '../supabase.js'
 
 const PASS = import.meta.env.VITE_ADMIN_PASSWORD || 'tapin-admin'
 
@@ -52,7 +53,7 @@ function Toggle({ label, hint, checked, onChange }) {
   )
 }
 
-function SocialSettings({ saved, onSave }) {
+function SocialSettings({ saved, onSave, remote }) {
   const [draft, setDraft] = useState(() => saved.map((s) => ({ ...s })))
   const [errs, setErrs] = useState({})
   const [fb, setFb] = useState(null)
@@ -74,7 +75,7 @@ function SocialSettings({ saved, onSave }) {
     const n = Object.keys(e).length
     if (n) return setFb({ kind: 'err', text: `Not saved. Fix ${n} link${n > 1 ? 's' : ''} and try again.` })
     onSave(draft.map((s) => ({ ...s, url: s.url.trim() })))
-    setFb({ kind: 'ok', text: 'Social links saved. They now show on the site wherever they are enabled.' })
+    setFb({ kind: 'ok', text: remote ? 'Social links applied. Press “Save changes” at the bottom of the page to publish them.' : 'Social links saved. They now show on the site wherever they are enabled.' })
   }
   const restore = () => {
     setDraft(SITE_SOCIALS.map((s) => ({ ...s })))
@@ -115,30 +116,56 @@ function SocialSettings({ saved, onSave }) {
 const Note = ({ n }) => (n ? <p className={'note ' + n.kind} role="status">{n.text}</p> : null)
 
 export default function Admin() {
-  const { data, update, replace, reset, storageError } = useData()
-  const [authed, setAuthed] = useState(() => sessionStorage.getItem('tapin-admin') === '1')
+  const { data, update, replace, reset, save, storageError, remote, status, dirty } = useData()
+  const [session, setSession] = useState(() => (remote ? readSession() : null))
+  const [authed, setAuthed] = useState(() => !remote && sessionStorage.getItem('tapin-admin') === '1')
+  const [email, setEmail] = useState(ADMIN_EMAIL)
+  const [busy, setBusy] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [pw, setPw] = useState('')
-  const [bad, setBad] = useState(false)
+  const [bad, setBad] = useState('')
   const [sel, setSel] = useState(0)
   const [confirm, setConfirm] = useState(false)
   const [msg, setMsg] = useState('')
   const [up, setUp] = useState({})
   const [rev, setRev] = useState(0)
   const fileRef = useRef(null)
+  const loggedIn = remote ? !!session : authed
 
-  if (!authed) {
+  // warn before leaving with edits that were not saved to the database
+  useEffect(() => {
+    if (!remote || !dirty) return
+    const h = (e) => { e.preventDefault(); e.returnValue = '' }
+    window.addEventListener('beforeunload', h)
+    return () => window.removeEventListener('beforeunload', h)
+  }, [remote, dirty])
+
+  if (!loggedIn) {
     return (
       <div className="pg">
         <h2>Dashboard</h2>
-        <form onSubmit={(e) => {
+        <form onSubmit={async (e) => {
           e.preventDefault()
-          if (pw === PASS) { sessionStorage.setItem('tapin-admin', '1'); setAuthed(true) } else setBad(true)
+          setBad('')
+          if (!remote) {
+            if (pw === PASS) { sessionStorage.setItem('tapin-admin', '1'); setAuthed(true) } else setBad('Wrong password.')
+            return
+          }
+          setBusy(true)
+          try { setSession(await signIn(email.trim(), pw)); setPw('') }
+          catch (err) { setBad(/invalid login/i.test(err.message) ? 'Wrong email or password.' : 'Could not sign in: ' + err.message) }
+          setBusy(false)
         }}>
+          {remote && (
+            <label className="fld"><span>Email</span>
+              <input type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} />
+            </label>
+          )}
           <label className="fld"><span>Password</span>
-            <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} autoFocus />
+            <input type="password" autoComplete="current-password" value={pw} onChange={(e) => setPw(e.target.value)} autoFocus />
           </label>
-          {bad && <p className="note err" role="alert">Wrong password.</p>}
-          <button className="btn" type="submit">Sign in</button>
+          {bad && <p className="note err" role="alert">{bad}</p>}
+          <button className="btn" type="submit" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
         </form>
       </div>
     )
@@ -160,6 +187,15 @@ export default function Admin() {
     note('logo', 'info', 'Processing…')
     const r = await prepareLogo(f)
     if (r.error) return note('logo', 'err', r.error)
+    if (remote) {
+      try {
+        note('logo', 'info', 'Uploading…')
+        const url = await uploadFile(await (await fetch(r.data)).blob(), 'logos')
+        setField('logo', url)
+        note('logo', 'ok', 'Logo uploaded. Press “Save changes” to publish it.')
+      } catch (err) { note('logo', 'err', 'Upload failed: ' + err.message) }
+      return
+    }
     setField('logo', r.data)
     note('logo', 'ok', `Logo uploaded (${kb(r.data.length)}). It now shows on the card and the place page.`)
   }
@@ -167,10 +203,31 @@ export default function Admin() {
     const f = e.target.files[0]; e.target.value = ''
     if (!f) return
     note('menu', 'info', 'Processing…')
-    const r = await prepareMenu(f)
+    const r = await prepareMenu(f, remote ? { max: 8 * 1024 * 1024, read: false } : {})
     if (r.error) return note('menu', 'err', r.error)
+    if (remote) {
+      try {
+        note('menu', 'info', 'Uploading…')
+        const url = await uploadFile(f, 'menus')
+        setField('menuFile', { name: f.name, type: f.type, url })
+        note('menu', 'ok', `Menu uploaded: ${f.name} (${kb(f.size)}). Press “Save changes” to publish it.`)
+      } catch (err) { note('menu', 'err', 'Upload failed: ' + err.message) }
+      return
+    }
     setField('menuFile', r.file)
     note('menu', 'ok', `Menu uploaded: ${r.file.name} (${kb(f.size)}).`)
+  }
+
+  const doSave = async () => {
+    setSaving(true); setMsg('Saving…')
+    const r = await save()
+    setSaving(false)
+    if (r.ok) return setMsg('Saved. The changes are live for everyone.')
+    if (/session expired/i.test(r.error)) { signOut(); setSession(null); return }
+    setMsg('Could not save: ' + r.error + (/row-level|policy|permission|jwt/i.test(r.error) ? ` Make sure you are signed in as ${ADMIN_EMAIL}.` : ''))
+  }
+  const logout = () => {
+    if (remote) { signOut(); setSession(null) } else { sessionStorage.removeItem('tapin-admin'); setAuthed(false) }
   }
 
   const exportJson = () => {
@@ -214,14 +271,17 @@ export default function Admin() {
         ))}
         <button className={'li' + (sel === 'site' ? ' on' : '')} type="button" onClick={() => choose('site')}>Site settings</button>
         <button className="li add" type="button" onClick={() => { update((d) => { d.places.push(blank()) }); choose(data.places.length) }}>+ Add place</button>
+        <button className="li" type="button" onClick={logout}>Sign out</button>
       </div>
 
       <div>
+        {remote && status === 'empty' && <p className="banner">The database is empty, so the sample data is shown. Press “Save changes” to publish it, then edit it.</p>}
+        {remote && status === 'offline' && <p className="banner err">Could not reach the database. You are seeing the last saved copy, and saving may fail.</p>}
         {sel === 'site' ? (
           <div className="panel">
             <h2>Site settings</h2>
             <Field label="Main WhatsApp number (digits with country code)" value={data.site.whatsapp} onChange={(v) => update((d) => { d.site.whatsapp = v })} />
-            <SocialSettings key={rev} saved={data.site.socials} onSave={(socials) => update((d) => { d.site.socials = socials })} />
+            <SocialSettings key={rev} remote={remote} saved={data.site.socials} onSave={(socials) => update((d) => { d.site.socials = socials })} />
           </div>
         ) : p ? (
           <div className="panel">
@@ -309,7 +369,7 @@ export default function Admin() {
                 <button className="sm d" type="button" onClick={() => { setField('menuFile', null); note('menu', 'ok', 'Menu file removed.') }}>Remove file</button>
               </>}
             </div>
-            <p className="hint">PDF, PNG, JPG or WebP up to 1.5 MB. Without a file, only the menu items above are shown.</p>
+            <p className="hint">PDF, PNG, JPG or WebP up to {remote ? '8 MB' : '1.5 MB'}. Without a file, only the menu items above are shown.</p>
             <Note n={up.menu} />
 
             <h3>Reviews</h3>
@@ -336,12 +396,17 @@ export default function Admin() {
         ) : null}
 
         <div className="bar">
-          <button className="btn" type="button" onClick={exportJson}>Export places.json</button>
+          {remote ? (
+            <button className="btn" type="button" onClick={doSave} disabled={(!dirty && status !== 'empty') || saving || status === 'loading'}>{saving ? 'Saving…' : 'Save changes'}</button>
+          ) : (
+            <button className="btn" type="button" onClick={exportJson}>Export places.json</button>
+          )}
+          {remote && <button className="sm" type="button" onClick={exportJson}>Backup (JSON)</button>}
           <button className="sm" type="button" onClick={() => fileRef.current.click()}>Import</button>
-          <button className="sm d" type="button" onClick={() => { reset(); choose(0); setRev((r) => r + 1); setMsg('Reset to the data in the repo.') }}>Reset</button>
+          <button className="sm d" type="button" onClick={() => { reset(); choose(0); setRev((r) => r + 1); setMsg(remote ? 'Discarded unsaved changes.' : 'Reset to the data in the repo.') }}>{remote ? 'Discard changes' : 'Reset'}</button>
           <input ref={fileRef} type="file" accept="application/json" hidden onChange={importJson} />
-          <span className={'msg' + (storageError ? ' err' : '')} role="status">
-            {storageError ? 'Browser storage is full, so recent edits are not saved. Export places.json now, or use smaller uploads.' : msg || 'Edits are saved in this browser. Export and commit places.json to publish them.'}
+          <span className={'msg' + (storageError || /^Could not|^Not saved/.test(msg) ? ' err' : '')} role="status">
+            {storageError ? 'Browser storage is full, so recent edits are not saved. Export places.json now, or use smaller uploads.' : msg || (remote ? (dirty ? 'You have unsaved changes.' : 'Everything is saved.') : 'Edits are saved in this browser. Export and commit places.json to publish them.')}
           </span>
         </div>
       </div>

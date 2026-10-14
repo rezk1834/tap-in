@@ -13,7 +13,7 @@ export function normalizePlace(p) {
   const q = { ...p }
   q.category = CATS.includes(p.category) ? p.category : guessCategory(p)
   q.logo = typeof p.logo === 'string' ? p.logo : ''
-  q.menuFile = p.menuFile && p.menuFile.data ? p.menuFile : null
+  q.menuFile = p.menuFile && (p.menuFile.data || p.menuFile.url) ? p.menuFile : null
   q.show = { menu: true, offers: true, links: true, reviews: true, ...(p.show || {}) }
   q.phones = Array.isArray(p.phones) ? p.phones : p.phone ? [{ label: '', number: p.phone }] : []
   if (Array.isArray(p.socials)) q.socials = p.socials
