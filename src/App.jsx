@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import { useLang } from './i18n.jsx'
 import Header from './components/Header.jsx'
 import Home from './components/Home.jsx'
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="*" element={<Place />} />
       </Routes>
       <Footer />
+      <Analytics />
     </>
   )
 }
