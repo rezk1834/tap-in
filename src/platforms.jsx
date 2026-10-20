@@ -10,6 +10,7 @@ export const PLATFORMS = [
   { id: 'youtube', label: 'YouTube', Icon: YouTube },
   { id: 'linkedin', label: 'LinkedIn', Icon: LinkedIn },
   { id: 'telegram', label: 'Telegram', Icon: Telegram },
+  { id: 'whatsapp', label: 'WhatsApp', Icon: WhatsApp },
   { id: 'website', label: 'Website', Icon: Globe },
   { id: 'other', label: 'Other', Icon: LinkIcon },
 ]

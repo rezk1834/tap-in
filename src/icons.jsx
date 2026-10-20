@@ -15,10 +15,39 @@ export const FileIcon = mk(<><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4M9 1
 export const Sun = mk(<><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>)
 export const Moon = mk(<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />)
 
+export const Phone = mk(<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />)
+export const Mail = mk(<><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></>)
+export const MapPin = mk(<><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" /></>)
+export const Calendar = mk(<><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></>)
+export const Cart = mk(<><path d="M3 4h2l2.5 11h10L20 7H6" /><circle cx="9" cy="19.5" r="1.3" /><circle cx="17" cy="19.5" r="1.3" /></>)
+export const Download = mk(<path d="M12 4v11M7 11l5 5 5-5M5 20h14" />)
+export const Star = mk(<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" />)
+export const MenuIcon = mk(<path d="M5 7h14M5 12h14M5 17h14" />)
+export const Gift = mk(<><rect x="3" y="8" width="18" height="4" /><path d="M12 8v13M5 12v9h14v-9M12 8c-2 0-4-1-4-3s3-2 4 1c1-3 4-3 4-1s-2 3-4 3" /></>)
+export const Tag = mk(<><path d="M3 12V4h8l10 10-8 8z" /><circle cx="7.5" cy="8.5" r="1" /></>)
+export const Clock = mk(<><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>)
+export const User = mk(<><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></>)
+export const Heart = mk(<path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z" />)
+export const ImageIcon = mk(<><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="9" cy="10" r="2" /><path d="M21 16l-5-5-8 8" /></>)
+
+const ICONS = { link: LinkIcon, phone: Phone, whatsapp: WhatsApp, mail: Mail, map: MapPin, calendar: Calendar, cart: Cart, download: Download, star: Star, menu: MenuIcon, gift: Gift, tag: Tag, clock: Clock, user: User, heart: Heart, globe: Globe }
+// Icon for a custom button. 'none' shows no icon.
+export function ButtonIcon({ name, ...props }) {
+  const I = ICONS[name]
+  return I ? <I {...props} /> : null
+}
+
 const CAT = {
   restaurant: mk(<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 1.5-3 4-3 7h3v11" />),
   cafe: mk(<path d="M5 8h11v6a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5zM16 9h2a2.5 2.5 0 0 1 0 5h-2M8 3v2M12 3v2" />),
+  retail: mk(<path d="M6 8h12l1 12H5L6 8zM9 8V6a3 3 0 0 1 6 0v2" />),
+  supermarket: Cart,
+  fashion: mk(<path d="M9 4a3 3 0 0 0 6 0l5 3-2 4-2-1v10H8V10l-2 1-2-4z" />),
+  electronics: mk(<><rect x="4" y="5" width="16" height="11" rx="1.5" /><path d="M2 19h20" /></>),
+  pharmacy: mk(<path d="M10.5 20.5a4.95 4.95 0 0 1-7-7l10-10a4.95 4.95 0 0 1 7 7zM8.5 8.5l7 7" />),
   clinic: mk(<path d="M10 4h4v6h6v4h-6v6h-4v-6H4v-4h6z" />),
+  beauty: mk(<><circle cx="6" cy="6" r="2.5" /><circle cx="6" cy="18" r="2.5" /><path d="M8 7.5L20 18M8 16.5L20 6" /></>),
+  services: mk(<><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18" /></>),
   other: mk(<path d="M4 9l1-5h14l1 5M4 9v11h16V9M4 9a3 3 0 0 0 5.3 1.9A3 3 0 0 0 14.7 11 3 3 0 0 0 20 9M10 20v-5h4v5" />),
 }
 
