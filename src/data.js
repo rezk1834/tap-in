@@ -1,0 +1,56 @@
+export const WHATSAPP = "201515215977";
+
+export const copy = {
+  en: {
+    nav: "العربية",
+    cta: "Talk to us on WhatsApp",
+    wa: "Hi Tap In, I'd like to know more.",
+    heroTitle: "One tap opens your whole restaurant.",
+    heroText: "Tap In brings your restaurant experience into the digital world. Tap a phone on the Tap In card to instantly reach the menu, social media, reviews, special offers and more.",
+    howTitle: "How it works",
+    steps: [
+      ["Place the card", "A Tap In card sits on the table, counter or reception desk."],
+      ["Tap your phone", "No app and no QR code. The phone just reads the card."],
+      ["Everything opens", "Menu, offers, social pages and reviews, all on one page."],
+    ],
+    whyTitle: "Made for places people visit",
+    why: [
+      ["Restaurants and cafés", "Menus that update anytime, plus offers and review links."],
+      ["Clinics and offices", "Location, booking on WhatsApp and Google reviews in one tap."],
+      ["Your own page", "Each customer gets a dedicated link, ready to share."],
+    ],
+    listTitle: "Places we support",
+    listText: "Tap a card to see what each place offers.",
+    types: { restaurant: "Restaurant", cafe: "Café", clinic: "Clinic" },
+    back: "All places",
+    powered: "Powered by Tap In",
+    notFound: "We couldn't find this page.",
+    kinds: { menu: "Menu", instagram: "Instagram", facebook: "Facebook", tiktok: "TikTok", website: "Website", reviews: "Reviews", google: "Leave a Google review", offers: "Special offers", whatsapp: "WhatsApp", location: "Location" },
+  },
+  ar: {
+    nav: "English",
+    cta: "تواصل معنا على واتساب",
+    wa: "مرحبًا Tap In، أريد معرفة المزيد.",
+    heroTitle: "لمسة واحدة تفتح لك مطعمك بالكامل.",
+    heroText: "Tap In تنقل تجربة مطعمك إلى العالم الرقمي. قرّب هاتفك من كارت Tap In لتصل فورًا إلى المنيو وصفحات التواصل والتقييمات والعروض وغيرها.",
+    howTitle: "كيف تعمل؟",
+    steps: [
+      ["ضع الكارت", "يوضع كارت Tap In على الطاولة أو الكاشير أو مكتب الاستقبال."],
+      ["قرّب هاتفك", "بدون تطبيق وبدون QR. الهاتف يقرأ الكارت مباشرة."],
+      ["كل شيء يفتح", "المنيو والعروض وصفحات التواصل والتقييمات في صفحة واحدة."],
+    ],
+    whyTitle: "مصمم للأماكن التي يزورها الناس",
+    why: [
+      ["المطاعم والكافيهات", "منيو يمكن تحديثه في أي وقت، مع العروض وروابط التقييم."],
+      ["العيادات والمكاتب", "الموقع والحجز عبر واتساب وتقييمات جوجل بلمسة واحدة."],
+      ["صفحتك الخاصة", "كل عميل له رابط مخصص جاهز للمشاركة."],
+    ],
+    listTitle: "الأماكن التي ندعمها",
+    listText: "اضغط على أي كارت لترى ما يقدمه المكان.",
+    types: { restaurant: "مطعم", cafe: "كافيه", clinic: "عيادة" },
+    back: "كل الأماكن",
+    powered: "بدعم من Tap In",
+    notFound: "لم نجد هذه الصفحة.",
+    kinds: { menu: "المنيو", instagram: "إنستجرام", facebook: "فيسبوك", tiktok: "تيك توك", website: "الموقع", reviews: "التقييمات", google: "قيّمنا على جوجل", offers: "العروض الخاصة", whatsapp: "واتساب", location: "الموقع" },
+  },
+};
