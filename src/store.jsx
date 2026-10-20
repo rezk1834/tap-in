@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import raw from './data/places.json'
-import { normalize } from './schema.js'
+import { normalize, imagesOf } from './schema.js'
 import { enabled as remote, fetchAll, saveAll, storagePath, deleteFiles } from './supabase.js'
 
 // With Supabase configured, visitors read the database and the admin saves to it (live for everyone).
@@ -20,10 +20,10 @@ function readCache() {
 }
 const writeCache = (d) => { try { localStorage.setItem(CACHE_KEY, JSON.stringify(d)) } catch {} }
 
-// Every Supabase Storage file a data set points to (logos and menu files)
+// Every Supabase Storage file a data set points to (logos, covers, gallery, product and menu files)
 function refsOf(d) {
   const s = new Set()
-  d.places.forEach((p) => [p.logo, ...p.menuFiles.map((f) => f.url)].forEach((u) => { if (u && storagePath(u)) s.add(u) }))
+  d.places.forEach((p) => imagesOf(p).forEach((u) => { if (u && storagePath(u)) s.add(u) }))
   return s
 }
 

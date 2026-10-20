@@ -66,25 +66,40 @@
       "offers": [
         {
           "t": "Lunch deal",
-          "d": "Main dish and drink for one price, 12–4 pm."
+          "d": "Main dish and drink for one price, 12–4 pm.",
+          "tAr": "غداء الوفر",
+          "dAr": "طبق رئيسي ومشروب بسعر واحد من 12 إلى 4 مساءً."
         },
         {
           "t": "Share platter",
-          "d": "Order two platters and get a dessert free."
+          "d": "Order two platters and get a dessert free.",
+          "tAr": "طبق المشاركة",
+          "dAr": "اطلب طبقين واحصل على حلوى مجانًا."
         }
       ],
       "menu": [
         {
           "n": "Grilled chicken",
-          "p": "180 EGP"
-        },
-        {
-          "n": "Fresh salad bowl",
-          "p": "95 EGP"
+          "nAr": "فراخ مشوية",
+          "p": "180 EGP",
+          "g": "Mains",
+          "gAr": "الأطباق الرئيسية",
+          "d": "With rice and salad",
+          "dAr": "مع أرز وسلطة"
         },
         {
           "n": "Family platter",
-          "p": "420 EGP"
+          "nAr": "طبق عائلي",
+          "p": "420 EGP",
+          "g": "Mains",
+          "gAr": "الأطباق الرئيسية"
+        },
+        {
+          "n": "Fresh salad bowl",
+          "nAr": "سلطة طازجة",
+          "p": "95 EGP",
+          "g": "Starters",
+          "gAr": "المقبلات"
         }
       ],
       "id": "demo-restaurant",
@@ -97,7 +112,21 @@
       "taglineAr": "أكل طازج للمشاركة.",
       "whatsapp": "201515215977",
       "address": "Alexandria, Egypt",
-      "hours": "Daily 12:00 – 00:00"
+      "hours": "Daily 12:00 – 00:00",
+      "about": "Fresh food, made to share. Family recipes, cooked daily.",
+      "aboutAr": "أكل طازج للمشاركة. وصفات عائلية تُطهى يوميًا.",
+      "layout": "menu",
+      "buttons": [
+        {
+          "id": "b1",
+          "kind": "whatsapp",
+          "label": "Book a table",
+          "labelAr": "احجز طاولة",
+          "value": "",
+          "icon": "calendar",
+          "style": "primary"
+        }
+      ]
     },
     {
       "logo": "",
@@ -153,7 +182,10 @@
       "taglineAr": "قهوة وصباحات هادئة.",
       "whatsapp": "201515215977",
       "address": "Alexandria, Egypt",
-      "hours": "Daily 8:00 – 23:00"
+      "hours": "Daily 8:00 – 23:00",
+      "layout": "menu",
+      "about": "A quiet corner for coffee and long conversations.",
+      "aboutAr": "ركن هادئ للقهوة والحكايات الطويلة."
     },
     {
       "logo": "",
@@ -208,7 +240,272 @@
       "taglineAr": "رعاية تبدأ بلمسة.",
       "whatsapp": "201515215977",
       "address": "Alexandria, Egypt",
-      "hours": "Sat – Thu 10:00 – 20:00"
+      "hours": "Sat – Thu 10:00 – 20:00",
+      "layout": "services",
+      "about": "Family medicine with short waiting times and clear prices.",
+      "aboutAr": "طب الأسرة بانتظار قصير وأسعار واضحة.",
+      "services": [
+        {
+          "id": "s1",
+          "name": "Consultation",
+          "nameAr": "كشف",
+          "price": "300 EGP",
+          "desc": "30 minutes with the doctor",
+          "descAr": "30 دقيقة مع الطبيب"
+        },
+        {
+          "id": "s2",
+          "name": "Follow-up visit",
+          "nameAr": "إعادة كشف",
+          "price": "150 EGP"
+        },
+        {
+          "id": "s3",
+          "name": "Health check package",
+          "nameAr": "باقة فحص شامل",
+          "price": "From 900 EGP",
+          "desc": "Blood tests and a full review",
+          "descAr": "تحاليل ومراجعة شاملة"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "b1",
+          "kind": "whatsapp",
+          "label": "Book an appointment",
+          "labelAr": "احجز موعدًا",
+          "value": "",
+          "icon": "calendar",
+          "style": "primary"
+        }
+      ]
+    },
+    {
+      "id": "demo-fashion",
+      "category": "fashion",
+      "layout": "catalog",
+      "accent": "rose",
+      "name": "Demo Fashion",
+      "nameAr": "أزياء تجريبي",
+      "tagline": "Everyday style.",
+      "taglineAr": "أناقة كل يوم.",
+      "about": "New arrivals every week.",
+      "aboutAr": "وصول جديد كل أسبوع.",
+      "whatsapp": "201515215977",
+      "address": "Alexandria, Egypt",
+      "hours": "Daily 11:00 – 22:00",
+      "hoursAr": "يوميًا 11 ص – 10 م",
+      "cover": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNlMjU0N2YiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM3YjFkNDkiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjIwMCIgcj0iNzAiIGZpbGw9IiNmZmZmZmY1NSIvPjwvc3ZnPg==",
+      "logo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNhMzE4NGYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlMjU0N2YiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjIwMCIgeT0iMjUwIiBmb250LXNpemU9IjE3MCIgZm9udC1mYW1pbHk9Ikdlb3JnaWEiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNmZmYiPkY8L3RleHQ+PC9zdmc+",
+      "products": [
+        {
+          "id": "p1",
+          "name": "Cotton shirt",
+          "nameAr": "قميص قطن",
+          "price": "450 EGP",
+          "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmOWE4YzQiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlMjU0N2YiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjIwMCIgcj0iNzAiIGZpbGw9IiNmZmZmZmY1NSIvPjwvc3ZnPg=="
+        },
+        {
+          "id": "p2",
+          "name": "Denim jacket",
+          "nameAr": "جاكيت جينز",
+          "price": "900 EGP",
+          "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM5M2M1ZmQiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMzYjgyZjYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjIwMCIgcj0iNzAiIGZpbGw9IiNmZmZmZmY1NSIvPjwvc3ZnPg=="
+        },
+        {
+          "id": "p3",
+          "name": "Summer dress",
+          "nameAr": "فستان صيفي",
+          "price": "650 EGP",
+          "desc": "Light and breathable",
+          "descAr": "خفيف ومريح",
+          "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZGU2OGEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmNTllMGIiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjIwMCIgcj0iNzAiIGZpbGw9IiNmZmZmZmY1NSIvPjwvc3ZnPg=="
+        },
+        {
+          "id": "p4",
+          "name": "Canvas bag",
+          "nameAr": "شنطة كانفاس",
+          "price": "250 EGP",
+          "img": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM4NmVmYWMiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyMmEwNmIiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjIwMCIgcj0iNzAiIGZpbGw9IiNmZmZmZmY1NSIvPjwvc3ZnPg=="
+        }
+      ],
+      "facts": [
+        {
+          "id": "f1",
+          "label": "Delivery",
+          "labelAr": "التوصيل",
+          "value": "Free over 1000 EGP",
+          "valueAr": "مجاني فوق 1000 جنيه"
+        },
+        {
+          "id": "f2",
+          "label": "Returns",
+          "labelAr": "الاسترجاع",
+          "value": "Within 14 days",
+          "valueAr": "خلال 14 يومًا"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "b1",
+          "kind": "link",
+          "label": "Shop online",
+          "labelAr": "تسوّق أونلاين",
+          "value": "https://example.com",
+          "icon": "cart",
+          "style": "primary"
+        }
+      ],
+      "socials": [
+        {
+          "platform": "instagram",
+          "url": "https://instagram.com/"
+        }
+      ],
+      "phones": [
+        {
+          "label": "Store",
+          "labelAr": "المتجر",
+          "number": "+201515215977"
+        }
+      ]
+    },
+    {
+      "id": "demo-salon",
+      "category": "beauty",
+      "layout": "links",
+      "accent": "purple",
+      "name": "Demo Salon",
+      "nameAr": "صالون تجريبي",
+      "tagline": "Hair · Nails · Skin",
+      "taglineAr": "شعر · أظافر · بشرة",
+      "about": "Book in seconds. Walk-ins welcome.",
+      "aboutAr": "احجزي في ثوانٍ. نستقبلكم بدون حجز أيضًا.",
+      "whatsapp": "201515215977",
+      "logo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM1YjIxYjYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNhNzhiZmEiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjIwMCIgeT0iMjU1IiBmb250LXNpemU9IjE4MCIgZm9udC1mYW1pbHk9Ikdlb3JnaWEiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNmZmYiPlM8L3RleHQ+PC9zdmc+",
+      "logoShape": "circle",
+      "btnShape": "pill",
+      "buttons": [
+        {
+          "id": "b1",
+          "kind": "whatsapp",
+          "label": "Book now",
+          "labelAr": "احجزي الآن",
+          "value": "",
+          "icon": "calendar",
+          "style": "primary"
+        },
+        {
+          "id": "b2",
+          "kind": "link",
+          "label": "Price list",
+          "labelAr": "قائمة الأسعار",
+          "value": "https://example.com/prices",
+          "icon": "tag",
+          "style": "outline"
+        },
+        {
+          "id": "b3",
+          "kind": "map",
+          "label": "Find us",
+          "labelAr": "موقعنا",
+          "value": "",
+          "icon": "map",
+          "style": "outline"
+        }
+      ],
+      "socials": [
+        {
+          "platform": "instagram",
+          "url": "https://instagram.com/"
+        },
+        {
+          "platform": "tiktok",
+          "url": "https://tiktok.com/@demo"
+        },
+        {
+          "platform": "facebook",
+          "url": "https://facebook.com/"
+        }
+      ],
+      "address": "Alexandria, Egypt",
+      "hours": "Daily 10:00 – 21:00",
+      "hoursAr": "يوميًا 10 ص – 9 م",
+      "texts": [
+        {
+          "id": "t1",
+          "title": "Good to know",
+          "titleAr": "معلومات مفيدة",
+          "body": "Please arrive 10 minutes early.",
+          "bodyAr": "يُرجى الحضور قبل الموعد بعشر دقائق."
+        }
+      ]
+    },
+    {
+      "id": "demo-studio",
+      "category": "services",
+      "layout": "gallery",
+      "accent": "teal",
+      "name": "Demo Photo Studio",
+      "nameAr": "استوديو تصوير تجريبي",
+      "tagline": "Portraits, events, products.",
+      "taglineAr": "بورتريه ومناسبات ومنتجات.",
+      "about": "A small studio with a big eye for detail.",
+      "aboutAr": "استوديو صغير بعين خبيرة بالتفاصيل.",
+      "whatsapp": "201515215977",
+      "logo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwZjc2NmUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyZGQ0YmYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjx0ZXh0IHg9IjIwMCIgeT0iMjUwIiBmb250LXNpemU9IjE1MCIgZm9udC1mYW1pbHk9Ikdlb3JnaWEiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNmZmYiPlA8L3RleHQ+PC9zdmc+",
+      "gallery": [
+        {
+          "id": "g1",
+          "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM1ZWVhZDQiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwZjc2NmUiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjIwMCIgcj0iNzAiIGZpbGw9IiNmZmZmZmY1NSIvPjwvc3ZnPg==",
+          "caption": "Portraits",
+          "captionAr": "بورتريه"
+        },
+        {
+          "id": "g2",
+          "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmY2E1YTUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNiOTFjMWMiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjIwMCIgcj0iNzAiIGZpbGw9IiNmZmZmZmY1NSIvPjwvc3ZnPg==",
+          "caption": "Weddings",
+          "captionAr": "أفراح"
+        },
+        {
+          "id": "g3",
+          "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmY2QzNGQiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNiNDUzMDkiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjIwMCIgcj0iNzAiIGZpbGw9IiNmZmZmZmY1NSIvPjwvc3ZnPg==",
+          "caption": "Products",
+          "captionAr": "منتجات"
+        },
+        {
+          "id": "g4",
+          "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNhNWI0ZmMiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM0MzM4Y2EiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjIwMCIgcj0iNzAiIGZpbGw9IiNmZmZmZmY1NSIvPjwvc3ZnPg=="
+        },
+        {
+          "id": "g5",
+          "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM4NmVmYWMiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxNTgwM2QiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjIwMCIgcj0iNzAiIGZpbGw9IiNmZmZmZmY1NSIvPjwvc3ZnPg=="
+        },
+        {
+          "id": "g6",
+          "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmOWE4ZDQiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNiZTE4NWQiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjIwMCIgcj0iNzAiIGZpbGw9IiNmZmZmZmY1NSIvPjwvc3ZnPg=="
+        }
+      ],
+      "services": [
+        {
+          "id": "s1",
+          "name": "Portrait session",
+          "nameAr": "جلسة بورتريه",
+          "price": "From 1500 EGP"
+        },
+        {
+          "id": "s2",
+          "name": "Event coverage",
+          "nameAr": "تغطية مناسبات",
+          "price": "From 4000 EGP"
+        }
+      ],
+      "socials": [
+        {
+          "platform": "instagram",
+          "url": "https://instagram.com/"
+        }
+      ]
     }
   ]
 }

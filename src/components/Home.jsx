@@ -5,6 +5,7 @@ import { useData } from '../store.jsx'
 import { ripple } from '../ripple.js'
 import { PlaceIcon, Instagram } from '../icons.jsx'
 import { activeSiteLinks } from '../platforms.jsx'
+import { CATEGORIES, catLabel } from '../categories.js'
 
 function TapDemo() {
   const { t } = useLang()
@@ -32,6 +33,12 @@ export default function Home() {
   const rail = useRef(null)
   const ig = activeSiteLinks(data.site).find((l) => l.id === 'instagram')
   const [more, setMore] = useState(false)
+  const [cat, setCat] = useState('all')
+
+  // only offer filters for the kinds of place that exist
+  const used = CATEGORIES.filter((c) => data.places.some((p) => p.category === c.id))
+  const active = used.some((c) => c.id === cat) ? cat : 'all'
+  const places = active === 'all' ? data.places : data.places.filter((p) => p.category === active)
 
   // Show the arrow buttons only when the row is wider than the screen
   useEffect(() => {
@@ -42,7 +49,7 @@ export default function Home() {
     const ro = new ResizeObserver(check)
     ro.observe(el)
     return () => ro.disconnect()
-  }, [data.places.length])
+  }, [places.length])
 
   const scroll = (dir) => {
     const el = rail.current
@@ -83,19 +90,33 @@ export default function Home() {
               <button className="ib" type="button" aria-label={t('next')} onClick={() => scroll(1)}>›</button>
             </div>
           </div>
+          {used.length > 1 && (
+            <div className="cfil" role="group" aria-label={t('filter')}>
+              <button type="button" aria-pressed={active === 'all'} onClick={() => setCat('all')}>{t('all')}</button>
+              {used.map((c) => (
+                <button type="button" key={c.id} aria-pressed={active === c.id} onClick={() => setCat(c.id)}>{lang === 'ar' ? c.ar : c.en}</button>
+              ))}
+            </div>
+          )}
           <div className="rail" ref={rail} tabIndex={0} role="region" aria-label={t('ph')}>
-            {data.places.length === 0 && <p className="sub">{status === 'loading' ? t('loading') : ''}</p>}
-            {data.places.map((p) => (
-              <a key={p.id} className="pc" href={'/place/' + encodeURIComponent(p.id)} onClick={(e) => open(e, p.id)}>
-                <span className="av">
-                  {p.logo ? <img src={p.logo} alt="" /> : <PlaceIcon category={p.category} />}
-                </span>
-                <span className="k">{L(p, 'type')}</span>
-                <strong>{L(p, 'name')}</strong>
-                <span className="t">{L(p, 'tagline')}</span>
-                <span className="go">{t('open')} {lang === 'ar' ? '←' : '→'}</span>
-              </a>
-            ))}
+            {places.length === 0 && <p className="sub">{status === 'loading' ? t('loading') : t('noPlaces')}</p>}
+            {places.map((p) => {
+              const sh = (k) => p.show[k] !== false
+              const kind = sh('type') ? L(p, 'type') || catLabel(p.category, lang) : ''
+              const nm = sh('name') ? L(p, 'name') : ''
+              const tl = sh('tagline') ? L(p, 'tagline') : ''
+              return (
+                <a key={p.id} className="pc" href={'/place/' + encodeURIComponent(p.id)} onClick={(e) => open(e, p.id)}>
+                  <span className="av">
+                    {sh('logo') && p.logo ? <img src={p.logo} alt="" /> : <PlaceIcon category={p.category} />}
+                  </span>
+                  {kind && <span className="k">{kind}</span>}
+                  <strong>{nm || kind}</strong>
+                  {tl && <span className="t">{tl}</span>}
+                  <span className="go">{t('open')} {lang === 'ar' ? '←' : '→'}</span>
+                </a>
+              )
+            })}
           </div>
         </div>
       </section>
@@ -104,14 +125,14 @@ export default function Home() {
         <div className="wrap">
           <h2>{t('ch')}</h2>
           <div className="ctas">
-          <a className="wa" href={'https://wa.me/' + String(data.site.whatsapp).replace(/\D/g, '')} target="_blank" rel="noopener noreferrer">
-            {t('wa')}
-          </a>
-          {ig && (
-            <a className="igb" href={ig.url} target="_blank" rel="noopener noreferrer">
-              <Instagram /> {t('igc')}
+            <a className="wa" href={'https://wa.me/' + String(data.site.whatsapp).replace(/\D/g, '')} target="_blank" rel="noopener noreferrer">
+              {t('wa')}
             </a>
-          )}
+            {ig && (
+              <a className="igb" href={ig.url} target="_blank" rel="noopener noreferrer">
+                <Instagram /> {t('igc')}
+              </a>
+            )}
           </div>
         </div>
       </section>

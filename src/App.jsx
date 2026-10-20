@@ -6,6 +6,7 @@ import Home from './components/Home.jsx'
 import Place from './components/Place.jsx'
 import Admin from './components/Admin.jsx'
 import Footer from './components/Footer.jsx'
+import FontStyle from './components/FontStyle.jsx'
 
 export default function App() {
   const { lang } = useLang()
@@ -20,6 +21,7 @@ export default function App() {
 
   return (
     <>
+      <FontStyle />
       <Header back={pathname !== '/'} />
       <Routes>
         <Route path="/" element={<Home />} />

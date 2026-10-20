@@ -5,14 +5,22 @@ import { Sun, Moon } from '../icons.jsx'
 
 export default function Header({ back }) {
   const { t, toggle } = useLang()
-  const { theme, toggle: toggleTheme } = useTheme()
+  const { theme, toggle: toggleTheme, bigger, smaller, canBigger, canSmaller } = useTheme()
   return (
     <header>
       <div className="wrap">
-        {back && <Link className="back" to="/" aria-label="Back">‹</Link>}
+        {back && <Link className="back" to="/" aria-label={t('home')}>‹</Link>}
         <Link to="/" aria-label="Tap In" className="brand">
           <img className="logo" src="/logo.svg" alt="Tap In" />
         </Link>
+        <div className="tsz" role="group" aria-label={t('textSize')}>
+          <button className="ib" type="button" onClick={smaller} disabled={!canSmaller} aria-label={t('smaller')} title={t('smaller')}>
+            <span className="az s" aria-hidden="true">A</span>
+          </button>
+          <button className="ib" type="button" onClick={bigger} disabled={!canBigger} aria-label={t('larger')} title={t('larger')}>
+            <span className="az l" aria-hidden="true">A</span>
+          </button>
+        </div>
         <button className="ib" type="button" onClick={toggleTheme} aria-label={t('theme')} title={t('theme')}>
           {theme === 'dark' ? <Sun /> : <Moon />}
         </button>

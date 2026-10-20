@@ -1,6 +1,6 @@
 # Tap In
 
-NFC card landing site: a home page, one page per place (menu, offers, social links, reviews), and a dashboard to edit the data. Built with React, Vite and React Router. English and Arabic (right-to-left).
+NFC card landing site: a home page, one page per place (menu, offers, social links, reviews), and a dashboard to edit the data. Built with React, Vite and React Router. Arabic (right-to-left, the default) and English.
 
 ## Run it
 
@@ -18,28 +18,32 @@ npm run build      # production build in dist/
 | `/place/<id>` | A place's page, for example `/place/demo-cafe`. This is the link to write to its NFC card |
 | `/admin` | Dashboard (password protected, not linked from the public pages) |
 
-## Fonts (Kalam)
+## Language, fonts and text size
 
-The site uses the Kalam font, loaded locally with `@font-face` in `src/styles.css`. There are no Google Fonts or other external font requests.
+- **Arabic is the default language** everywhere on the public site (right-to-left). A visitor's own choice of English is remembered. The dashboard itself stays in English.
+- **Text size:** the header has A− / A+ buttons (five steps, 85% to 150%). The choice is remembered.
+- **Fonts:** Dashboard → **Fonts and typography**. The library has Arabic fonts, Latin fonts, fonts with both, ready-made Arabic + English pairings, and a font per role (headings, body, buttons, labels, navigation). Latin letters and numbers use the role's Latin font; Arabic letters use its Arabic font. The default is Cairo + Inter.
+- Fonts are Google Fonts, loaded only when selected (plus the Cairo and Inter defaults in `index.html`). To self-host later, add the files to `public/fonts/` and `@font-face` rules, and remove the `loadFont` calls in `src/fontLibrary.js`.
 
-Put the two font files here (the folder already exists):
+## Pages, layouts and the page builder
 
-```
-public/fonts/Kalam-Regular.ttf   (weight 400, regular text)
-public/fonts/Kalam-Bold.ttf      (weight 700, headings and bold text)
-```
+Each place chooses one of seven **layouts** (Dashboard → place → *Layout and sections*): Business profile, Linktree style, Restaurant and digital menu, Retail store and catalog, Service business, Gallery and portfolio, Business contact page. Every layout is responsive.
 
-Vite serves `public/` as-is in `npm run dev` and in the production build, and `vercel.json` caches the fonts for a year. To check they load, open DevTools, go to Network, filter by **Font**, reload, and you should see both files with status 200. If one is missing, the browser quietly uses a fallback font.
+- **Content is separate from layout.** Switching layouts never deletes anything. A section the new layout does not display keeps its saved content, and the dashboard lists it as "saved but not shown".
+- **Sections** (about, contact buttons, custom buttons, social links, offers, menu, products, services, gallery, business info, custom text sections, reviews, address and hours) can be reordered per layout.
+- **Everything has its own visibility switch:** the name, type, tagline, logo, cover, address, hours, WhatsApp, directions, each section, and every single item in every list (phone, email, link, button, product, photo, review...). Hidden elements are not rendered at all. Turning something off never deletes it.
+- **Custom buttons** go to a link, phone, WhatsApp, email or map, with a label in both languages, an icon and a style. The dashboard suggests business-specific ones (Order online, Book a table, Book an appointment...).
+- **Logo:** shown large at the top of every page (size and shape are configurable), with an optional cover image. A category icon is used until a logo is uploaded.
+- **Categories:** restaurant, café, retail, supermarket, clothing and fashion, electronics, pharmacy, clinic and healthcare, beauty and personal care, other services, other. The home page can filter by category.
+- **Live preview** in the dashboard shows unsaved edits in Arabic or English, phone or wide.
+- Empty sections never show on the public page. A page with nothing on it shows a friendly "being set up" message.
 
-Kalam has no Arabic letters, so Arabic text uses the system Arabic font (Segoe UI, Tahoma, Noto Sans Arabic) while Latin letters and numbers still use Kalam.
-
-## Features
+## More features
 
 - **Editable page address:** each place's link (`/place/<address>`) can be changed in the dashboard, or set from the place name with one click. New places follow their name until first published. When you change a published address, the old link keeps redirecting to the new one (you can remove old links in the dashboard).
 - **Multiple menu photos:** upload several photos and PDFs at once, reorder them, preview and remove them. Photos show stacked on the place page; each PDF gets its own button.
 - **Automatic cleanup in Supabase Storage:** when you press Save, images that are no longer used (replaced, removed, or belonging to a deleted place) are deleted from storage. Files uploaded and then discarded or replaced before saving are removed too. This needs the storage "read uploads" policy in `supabase/schema.sql`.
 - **WhatsApp toggle per place** (dashboard → Sections on the public page), and a **WhatsApp icon in the footer** with the other social icons (switch it on or off in Site settings; it uses the main WhatsApp number).
-- **Text fields** (inputs, text areas, dropdowns) use Noto Sans, a standard Google font with Arabic support; the rest of the site uses Kalam.
 
 - **Official social links:** the footer shows X, Facebook, Instagram and TikTok, and the home page has a "Contact Us on Instagram" button. Both are managed in **Dashboard → Site settings → Official social media**: edit each URL, switch each platform on or off, then press **Save social links**. URLs are validated (https, right domain, account name present). A disabled platform disappears everywhere, and the Instagram button hides when Instagram is off.
 
@@ -48,7 +52,6 @@ Kalam has no Arabic letters, so Arabic text uses the system Arabic font (Segoe U
 - **Places row:** the supported places scroll sideways (swipe on mobile, arrow buttons on desktop when there is overflow).
 - **Contact and social links:** any number of phone numbers and social links per place (Instagram, Facebook, TikTok, X, YouTube, LinkedIn, Telegram, Website, or any other name). Only configured ones appear. WhatsApp works exactly as before.
 - **Reviews:** a reviews section with an average rating, review cards and a "Leave a review" button.
-- **Section toggles:** per place, Menu, Offers, Links and Reviews can each be shown or hidden. "Links" covers social icons and phone numbers.
 - **Uploads:** a logo (PNG, JPG, WebP, SVG; rasters are resized automatically) and a menu file (PDF or image up to 1.5 MB). Files are checked on upload and the dashboard shows a clear success or error message.
 
 To add a social platform, add one line to `src/platforms.jsx`. Old data (single phone, Instagram, Facebook, TikTok, review URL) is upgraded automatically.
